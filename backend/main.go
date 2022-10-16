@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/oauth2"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	fmt.Println(oauth2.Config{})
+
 }
