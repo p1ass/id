@@ -12,3 +12,6 @@ plugins:
   - name: connect-go
     out: ../backend/gen
     opt: paths=source_relative
+  - name: doc
+    out: ./
+    opt: markdown,spec.md
