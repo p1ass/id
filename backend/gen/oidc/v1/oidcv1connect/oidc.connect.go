@@ -5,7 +5,10 @@
 package oidcv1connect
 
 import (
+	context "context"
+	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
+	v1 "github.com/p1ass/id/backend/gen/oidc/v1"
 	http "net/http"
 	strings "strings"
 )
@@ -18,43 +21,94 @@ import (
 const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
-	// AuthenticationServiceName is the fully-qualified name of the AuthenticationService service.
-	AuthenticationServiceName = "oidc.v1.AuthenticationService"
+	// OIDCPrivateServiceName is the fully-qualified name of the OIDCPrivateService service.
+	OIDCPrivateServiceName = "oidc.v1.OIDCPrivateService"
 )
 
-// AuthenticationServiceClient is a client for the oidc.v1.AuthenticationService service.
-type AuthenticationServiceClient interface {
+// OIDCPrivateServiceClient is a client for the oidc.v1.OIDCPrivateService service.
+type OIDCPrivateServiceClient interface {
+	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
+	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
+	// Exchange exchanges authorization code into access token and ID Token
+	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+	Exchange(context.Context, *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error)
 }
 
-// NewAuthenticationServiceClient constructs a client for the oidc.v1.AuthenticationService service.
-// By default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped
-// responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// NewOIDCPrivateServiceClient constructs a client for the oidc.v1.OIDCPrivateService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
 // connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewAuthenticationServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) AuthenticationServiceClient {
+func NewOIDCPrivateServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) OIDCPrivateServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	return &authenticationServiceClient{}
+	return &oIDCPrivateServiceClient{
+		authenticate: connect_go.NewClient[v1.AuthenticateRequest, v1.AuthenticateResponse](
+			httpClient,
+			baseURL+"/oidc.v1.OIDCPrivateService/Authenticate",
+			opts...,
+		),
+		exchange: connect_go.NewClient[v1.ExchangeRequest, v1.ExchangeResponse](
+			httpClient,
+			baseURL+"/oidc.v1.OIDCPrivateService/Exchange",
+			opts...,
+		),
+	}
 }
 
-// authenticationServiceClient implements AuthenticationServiceClient.
-type authenticationServiceClient struct {
+// oIDCPrivateServiceClient implements OIDCPrivateServiceClient.
+type oIDCPrivateServiceClient struct {
+	authenticate *connect_go.Client[v1.AuthenticateRequest, v1.AuthenticateResponse]
+	exchange     *connect_go.Client[v1.ExchangeRequest, v1.ExchangeResponse]
 }
 
-// AuthenticationServiceHandler is an implementation of the oidc.v1.AuthenticationService service.
-type AuthenticationServiceHandler interface {
+// Authenticate calls oidc.v1.OIDCPrivateService.Authenticate.
+func (c *oIDCPrivateServiceClient) Authenticate(ctx context.Context, req *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error) {
+	return c.authenticate.CallUnary(ctx, req)
 }
 
-// NewAuthenticationServiceHandler builds an HTTP handler from the service implementation. It
-// returns the path on which to mount the handler and the handler itself.
+// Exchange calls oidc.v1.OIDCPrivateService.Exchange.
+func (c *oIDCPrivateServiceClient) Exchange(ctx context.Context, req *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error) {
+	return c.exchange.CallUnary(ctx, req)
+}
+
+// OIDCPrivateServiceHandler is an implementation of the oidc.v1.OIDCPrivateService service.
+type OIDCPrivateServiceHandler interface {
+	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
+	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
+	// Exchange exchanges authorization code into access token and ID Token
+	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+	Exchange(context.Context, *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error)
+}
+
+// NewOIDCPrivateServiceHandler builds an HTTP handler from the service implementation. It returns
+// the path on which to mount the handler and the handler itself.
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewAuthenticationServiceHandler(svc AuthenticationServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
+func NewOIDCPrivateServiceHandler(svc OIDCPrivateServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	return "/oidc.v1.AuthenticationService/", mux
+	mux.Handle("/oidc.v1.OIDCPrivateService/Authenticate", connect_go.NewUnaryHandler(
+		"/oidc.v1.OIDCPrivateService/Authenticate",
+		svc.Authenticate,
+		opts...,
+	))
+	mux.Handle("/oidc.v1.OIDCPrivateService/Exchange", connect_go.NewUnaryHandler(
+		"/oidc.v1.OIDCPrivateService/Exchange",
+		svc.Exchange,
+		opts...,
+	))
+	return "/oidc.v1.OIDCPrivateService/", mux
 }
 
-// UnimplementedAuthenticationServiceHandler returns CodeUnimplemented from all methods.
-type UnimplementedAuthenticationServiceHandler struct{}
+// UnimplementedOIDCPrivateServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedOIDCPrivateServiceHandler struct{}
+
+func (UnimplementedOIDCPrivateServiceHandler) Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("oidc.v1.OIDCPrivateService.Authenticate is not implemented"))
+}
+
+func (UnimplementedOIDCPrivateServiceHandler) Exchange(context.Context, *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("oidc.v1.OIDCPrivateService.Exchange is not implemented"))
+}

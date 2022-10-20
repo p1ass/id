@@ -2,4 +2,62 @@ syntax = "proto3";
 
 package oidc.v1;
 
-service AuthenticationService {}
+// OIDCPrivateService provides APIs to finish OpenID Connect flow.
+// It is designed as a private API, so it is intended to be requested by the Next.js server, not browser.
+service OIDCPrivateService {
+  // Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
+  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {}
+  // Exchange exchanges authorization code into access token and ID Token
+  // Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+  rpc Exchange(ExchangeRequest) returns (ExchangeResponse) {}
+}
+
+// Spec: [OpenID Connect Core 1.0 Section 3.1.2.1.](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
+message AuthenticateRequest {
+  // scopes MUST contains `openid` scope.
+  repeated string scopes = 1;
+  // Supported type is only `code` (Authorization Code Flow)
+  string response_type = 2;
+  // OAuth 2.0 Client identifier
+  string client_id = 3;
+  // Redirection URI to which the response will be sent.
+  // This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/
+  string redirect_uri = 4;
+  // Used to maintain state between the request and the callback.
+  // This prevents CSRF attack, so MUST be specified.
+  // (In original spec, requirement level is RECOMMENDED, but we force to specify the state)
+  string state = 5;
+}
+
+// Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#AuthResponse)
+message AuthenticateResponse {
+  // OAuth 2.0 Authorization Code
+  string code = 1;
+  // state equals AuthenticateRequest state value.
+  string state = 2;
+}
+
+// Spec: [OpenID Connect Core 1.0 Section 3.1.3.1.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenRequest)
+message ExchangeRequest {
+  // Grant type MUST be `authorization_code`
+  string grant_type = 1;
+  // OAuth 2.0 Authorization Code
+  string code = 2;
+  // redirect_uri MUST be identical authenticate request `redirect_uri` value
+  string redirect_uri = 3;
+}
+
+// Spec: [OpenID Connect Core 1.0 Section 3.1.3.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenResponse)
+message ExchangeResponse {
+  // Access Token
+  string access_token = 1;
+  // ID Token value associated with the authenticated session
+  string id_token = 2;
+  // Token type MUST be `Bearer`, as specified in [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750.htm)
+  string token_type = 3;
+  // Lifetime in seconds of the access token.
+  // Requirement level is MUST (Original spec is RECOMMENDED).
+  uint32 expires_in = 4;
+  // Refresh token
+  optional string refresh_token = 5;
+}

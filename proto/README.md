@@ -2,6 +2,9 @@
 
 Protobuf API Specification
 
+## Specificatios
+
+[spec.md](./spec.md)
 
 ## Requirements
 
