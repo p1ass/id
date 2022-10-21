@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -18,23 +17,21 @@ type (
 )
 
 const (
-	Unknown Scope = "unknown"
-	OpenId  Scope = "openid"
-	Email   Scope = "email"
+	ScopeUnknown Scope = "unknown"
+	ScopeOpenId  Scope = "openid"
+	ScopeEmail   Scope = "email"
 )
 
-var ErrInvalidScope = errors.New("invalid scope")
-
 var scopeMap = map[string]Scope{
-	"openid": OpenId,
-	"email":  Email,
+	string(ScopeOpenId): ScopeOpenId,
+	string(ScopeEmail):  ScopeEmail,
 }
 
 func NewScope(str string) (Scope, error) {
 	if s, ok := scopeMap[str]; ok {
 		return s, nil
 	}
-	return Unknown, fmt.Errorf("%s is not valid scope", str)
+	return ScopeUnknown, fmt.Errorf("%s is not valid scope", str)
 }
 
 func NewScopes(strs []string) (Scopes, error) {
@@ -52,11 +49,13 @@ func NewScopes(strs []string) (Scopes, error) {
 
 // ContainsOpenId checks if scopes contains openid scope.
 // OpenID Connect requests MUST contain the openid scope value.
+// (If no openid scope value is present, the request may still be a valid OAuth 2.0 request,
+// but is not an OpenID Connect request.)
 //
 // [OpenID Connect 1.0 Core Section 3.1.2.1.]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 func (scopes Scopes) ContainsOpenId() bool {
 	for _, s := range scopes {
-		if s == OpenId {
+		if s == ScopeOpenId {
 			return true
 		}
 	}
