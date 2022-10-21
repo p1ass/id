@@ -4,13 +4,14 @@ go 1.19
 
 require (
 	github.com/bufbuild/connect-go v1.0.0
+	github.com/rs/zerolog v1.28.0
 	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b
-	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 )
