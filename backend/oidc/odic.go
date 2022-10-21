@@ -3,13 +3,13 @@ package oidc
 import (
 	"context"
 	"errors"
-	"log"
-
-	"github.com/p1ass/id/backend/oidc/internal"
 
 	"github.com/bufbuild/connect-go"
+
 	oidcv1 "github.com/p1ass/id/backend/gen/oidc/v1"
 	"github.com/p1ass/id/backend/gen/oidc/v1/oidcv1connect"
+	"github.com/p1ass/id/backend/log"
+	"github.com/p1ass/id/backend/oidc/internal"
 )
 
 type OIDCServer struct {
@@ -30,23 +30,23 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 func (o *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
 	if err != nil {
-		log.Println(err)
+		log.Info(ctx).Err(err)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}
 
 	responseTypes, err := internal.NewResponseTypes(req.Msg.ResponseTypes)
 	if err != nil {
-		log.Println(err)
+		log.Info(ctx).Err(err)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
 	if !scopes.ContainsOpenId() {
-		log.Println("scopes does not contain openid scope")
+		log.Info(ctx).Msg("scopes does not contain openid scope")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}
 
 	if !responseTypes.ContainsOnlyCode() {
-		log.Println("response types does not contain only code")
+		log.Info(ctx).Msg("response types does not contain only code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 

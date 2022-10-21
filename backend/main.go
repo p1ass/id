@@ -1,18 +1,21 @@
 package main
 
 import (
-	"log"
+	"context"
 	"net/http"
 
+	"github.com/p1ass/id/backend/log"
+
 	"github.com/p1ass/id/backend/gen/oidc/v1/oidcv1connect"
+	"github.com/p1ass/id/backend/oidc"
 
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-
-	"github.com/p1ass/id/backend/oidc"
 )
 
 func main() {
+	log.Init()
+
 	server := oidc.NewOIDCServer()
 
 	mux := http.NewServeMux()
@@ -25,6 +28,6 @@ func main() {
 		h2c.NewHandler(mux, &http2.Server{}),
 	)
 	if err != nil {
-		log.Println(err)
+		log.Info(context.Background()).Err(err)
 	}
 }
