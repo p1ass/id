@@ -31,7 +31,7 @@ Spec: [OpenID Connect Core 1.0 Section 3.1.2.1.](https://openid.net/specs/openid
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | scopes | [string](#string) | repeated | scopes MUST contains `openid` scope. |
-| response_type | [string](#string) |  | Supported type is only `code` (Authorization Code Flow) |
+| response_types | [string](#string) | repeated | Supported type is only `code` (Authorization Code Flow) |
 | client_id | [string](#string) |  | OAuth 2.0 Client identifier |
 | redirect_uri | [string](#string) |  | Redirection URI to which the response will be sent. This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/ |
 | state | [string](#string) |  | Used to maintain state between the request and the callback. This prevents CSRF attack, so MUST be specified. (In original spec, requirement level is RECOMMENDED, but we force to specify the state) |
@@ -107,7 +107,7 @@ It is designed as a private API, so it is intended to be requested by the Next.j
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code |
+| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code Possible error code: - InvalidArgument: &#34;invalid scope&#34; - InvalidArgument: &#34;invalid request&#34; |
 | Exchange | [ExchangeRequest](#oidc-v1-ExchangeRequest) | [ExchangeResponse](#oidc-v1-ExchangeResponse) | Exchange exchanges authorization code into access token and ID Token Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint) |
 
  

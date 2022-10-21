@@ -6,8 +6,9 @@ package oidc.v1;
 // It is designed as a private API, so it is intended to be requested by the Next.js server, not browser.
 service OIDCPrivateService {
   // Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
-  // Possible error code
+  // Possible error code:
   // - InvalidArgument: "invalid scope"
+  // - InvalidArgument: "invalid request"
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {}
   // Exchange exchanges authorization code into access token and ID Token
   // Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
@@ -19,7 +20,7 @@ message AuthenticateRequest {
   // scopes MUST contains `openid` scope.
   repeated string scopes = 1;
   // Supported type is only `code` (Authorization Code Flow)
-  string response_type = 2;
+  repeated string response_types = 2;
   // OAuth 2.0 Client identifier
   string client_id = 3;
   // Redirection URI to which the response will be sent.
