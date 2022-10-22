@@ -3,6 +3,7 @@ package oidc
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/bufbuild/connect-go"
 
@@ -13,6 +14,7 @@ import (
 )
 
 type OIDCServer struct {
+	clientDatastore internal.ClientDatastore
 }
 
 // OAuth 2.0 Error Responses defined by RFC6749.
@@ -27,7 +29,7 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	return &OIDCServer{}
 }
 
-func (o *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
+func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
 	if err != nil {
 		log.Info(ctx).Err(err)
@@ -50,11 +52,19 @@ func (o *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
+	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
+	if err != nil {
+		log.Info(ctx).Err(err).Msgf("client id = %s is not found", req.Msg.ClientId)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
+
+	fmt.Println(client)
+
 	// TODO implement me
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authenticate is unimplemented"))
 }
 
-func (o *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
 	// TODO implement me
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("exchange is unimplemented"))
 }
