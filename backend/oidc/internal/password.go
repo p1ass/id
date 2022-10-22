@@ -3,6 +3,7 @@ package internal
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"io"
 
 	"golang.org/x/crypto/argon2"
@@ -19,7 +20,10 @@ type (
 	//
 	// [Argon2id]: https://en.wikipedia.org/wiki/Argon2
 	// [Password Storage Cheat Sheet]: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-	HashedPassword string
+	HashedPassword struct {
+		hashedPassword string
+		salt           string
+	}
 )
 
 // According to OWASP [Password Storage Cheat Sheet], argon2id parameters should use following parameters.
@@ -33,10 +37,13 @@ const (
 	argon2SaltByte    = 16
 )
 
+// ErrMismatchedHashAndPassword is returned from ComparePassword when a password and hash do not match.
+var ErrMismatchedHashAndPassword = errors.New("hashedPassword is not the hash of the given password")
+
 // NewHashedPassword generates hashed password and salt.
-func NewHashedPassword(rawPassword RawPassword) (hashedPassword string, salt string) {
-	salt = mustGenerateSalt(argon2SaltByte)
-	hashedPassword = base64.RawURLEncoding.EncodeToString(argon2.IDKey(
+func NewHashedPassword(rawPassword RawPassword) *HashedPassword {
+	salt := mustGenerateSalt(argon2SaltByte)
+	hashedPassword := base64.RawURLEncoding.EncodeToString(argon2.IDKey(
 		[]byte(rawPassword),
 		[]byte(salt),
 		argon2idTime,
@@ -44,7 +51,10 @@ func NewHashedPassword(rawPassword RawPassword) (hashedPassword string, salt str
 		argon2idThreads,
 		argon2idKeLenByte),
 	)
-	return hashedPassword, salt
+	return &HashedPassword{
+		hashedPassword: hashedPassword,
+		salt:           salt,
+	}
 }
 
 func (p RawPassword) String() string {
@@ -61,6 +71,23 @@ func (p HashedPassword) String() string {
 
 func (p HashedPassword) GoString() string {
 	return "[masked]"
+}
+
+// ComparePassword compares the given raw password with it.
+// It returns nil on success, or an error on failure.
+func (p HashedPassword) ComparePassword(other RawPassword) error {
+	otherHash := base64.RawURLEncoding.EncodeToString(argon2.IDKey(
+		[]byte(other),
+		[]byte(p.salt),
+		argon2idTime,
+		argon2idMemoryKB,
+		argon2idThreads,
+		argon2idKeLenByte),
+	)
+	if p.hashedPassword != otherHash {
+		return ErrMismatchedHashAndPassword
+	}
+	return nil
 }
 
 func mustGenerateSalt(saltByte uint16) string {
