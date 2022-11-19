@@ -76,8 +76,7 @@ func TestAuthenticatedClient_IdenticalRedirectURI(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			authedClient := &internal.AuthenticatedClient{Client: c}
-			if err := authedClient.IdenticalRedirectURI(tt.args.redirectURI); (err != nil) != tt.wantErr {
+			if err := c.IdenticalRedirectURI(tt.args.redirectURI); (err != nil) != tt.wantErr {
 				t.Errorf("IdenticalRedirectURI() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
