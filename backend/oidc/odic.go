@@ -37,12 +37,6 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	authedClient, err := client.Authenticate(ctx, req.Header())
-	if err != nil {
-		log.Info(ctx).Err(err)
-		return nil, connect.NewError(connect.CodePermissionDenied, ErrUnauthorizedClient)
-	}
-
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
 	if err != nil {
 		log.Info(ctx).Err(err)
@@ -71,7 +65,7 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	if err := authedClient.IdenticalRedirectURI(*redirectURI); err != nil {
+	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}

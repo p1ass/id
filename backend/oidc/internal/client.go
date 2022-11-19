@@ -76,7 +76,7 @@ func (c *Client) Authenticate(ctx context.Context, header http.Header) (*Authent
 	return &AuthenticatedClient{c}, nil
 }
 
-func (c *AuthenticatedClient) IdenticalRedirectURI(redirectURI url.URL) error {
+func (c *Client) IdenticalRedirectURI(redirectURI url.URL) error {
 	for _, uri := range c.redirectURIs {
 		if uri == redirectURI {
 			return nil
