@@ -1,8 +1,9 @@
 package internal_test
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/p1ass/id/backend/oidc/internal"
 )
@@ -90,8 +91,8 @@ func TestNewResponseTypes(t *testing.T) {
 				t.Errorf("NewResponseTypes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewResponseTypes() got = %v, want %v", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("NewResponseTypes() diff = %v", cmp.Diff(got, tt.want))
 			}
 		})
 	}

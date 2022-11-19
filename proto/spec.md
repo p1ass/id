@@ -107,7 +107,7 @@ It is designed as a private API, so it is intended to be requested by the Next.j
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code Possible error code: - InvalidArgument: &#34;invalid scope&#34; - InvalidArgument: &#34;invalid request&#34; |
+| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code Possible error code: - InvalidArgument: &#34;invalid scope&#34; - InvalidArgument: &#34;invalid request&#34; - PermissionDenied: &#34;unauthorized client&#34; |
 | Exchange | [ExchangeRequest](#oidc-v1-ExchangeRequest) | [ExchangeResponse](#oidc-v1-ExchangeResponse) | Exchange exchanges authorization code into access token and ID Token Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint) |
 
  
