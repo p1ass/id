@@ -15,6 +15,7 @@ import (
 
 type OIDCServer struct {
 	clientDatastore internal.ClientDatastore
+	codeDatastore   internal.CodeDatastore
 }
 
 // OAuth 2.0 Error Responses defined by RFC6749.
@@ -72,8 +73,16 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
 	}
 
-	// TODO implement me
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authenticate is unimplemented"))
+	code := internal.NewAuthorizationCode(client, *redirectURI)
+	if err := s.codeDatastore.Save(code); err != nil {
+		log.Info(ctx).Err(err).Msgf("failed to save code to datastore")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to save code to datastore"))
+	}
+
+	return connect.NewResponse[oidcv1.AuthenticateResponse](&oidcv1.AuthenticateResponse{
+		Code:  code.Code,
+		State: req.Msg.State,
+	}), nil
 }
 
 func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
