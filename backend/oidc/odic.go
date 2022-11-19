@@ -21,8 +21,9 @@ type OIDCServer struct {
 //
 // [RFC 6749 Section 4.1.2.1]: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
 var (
-	ErrInvalidRequest = errors.New("invalid request")
-	ErrInvalidScope   = errors.New("invalid scope")
+	ErrInvalidRequest     = errors.New("invalid request")
+	ErrInvalidScope       = errors.New("invalid scope")
+	ErrUnauthorizedClient = errors.New("unauthorized client")
 )
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
@@ -30,6 +31,18 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 }
 
 func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
+	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
+	if err != nil {
+		log.Info(ctx).Err(err).Msgf("client id = %s is not found", req.Msg.ClientId)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
+
+	authedClient, err := client.Authenticate(ctx, req.Header())
+	if err != nil {
+		log.Info(ctx).Err(err)
+		return nil, connect.NewError(connect.CodePermissionDenied, ErrUnauthorizedClient)
+	}
+
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
 	if err != nil {
 		log.Info(ctx).Err(err)
@@ -52,19 +65,13 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
-	if err != nil {
-		log.Info(ctx).Err(err).Msgf("client id = %s is not found", req.Msg.ClientId)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
-	}
-
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
+	if err := authedClient.IdenticalRedirectURI(*redirectURI); err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}

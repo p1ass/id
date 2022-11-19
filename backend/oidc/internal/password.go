@@ -38,7 +38,7 @@ const (
 )
 
 // ErrMismatchedHashAndPassword is returned from ComparePassword when a password and hash do not match.
-var ErrMismatchedHashAndPassword = errors.New("hashedPassword is not the hash of the given password")
+var ErrMismatchedHashAndPassword = errors.New("password is not the hash of the given password")
 
 // NewHashedPassword generates hashed password and salt.
 func NewHashedPassword(rawPassword RawPassword) *HashedPassword {
