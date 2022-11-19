@@ -21,9 +21,11 @@ type OIDCServer struct {
 //
 // [RFC 6749 Section 4.1.2.1]: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
 var (
-	ErrInvalidRequest     = errors.New("invalid request")
-	ErrInvalidScope       = errors.New("invalid scope")
-	ErrUnauthorizedClient = errors.New("unauthorized client")
+	ErrInvalidRequest          = errors.New("invalid_request")
+	ErrInvalidRequestURI       = errors.New("invalid_request_uri")
+	ErrInvalidScope            = errors.New("invalid_scope")
+	ErrUnsupportedResponseType = errors.New("unsupported_response_type")
+	ErrUnauthorizedClient      = errors.New("unauthorized_client")
 )
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
@@ -56,18 +58,18 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 
 	if !responseTypes.ContainsOnlyCode() {
 		log.Info(ctx).Msg("response types does not contain only code")
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedResponseType)
 	}
 
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
 	}
 
 	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
 	}
 
 	// TODO implement me
