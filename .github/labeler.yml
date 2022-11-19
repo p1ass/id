@@ -1,0 +1,10 @@
+ci:
+  - .github/**/*
+backend:
+  - backend/**/*
+docs:
+  - docs/**/*
+proto:
+  - proto/**/*
+ui:
+  - ui/**/*
