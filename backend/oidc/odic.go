@@ -3,7 +3,7 @@ package oidc
 import (
 	"context"
 	"errors"
-	"fmt"
+	"net/url"
 
 	"github.com/bufbuild/connect-go"
 
@@ -58,7 +58,16 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	fmt.Println(client)
+	redirectURI, err := url.Parse(req.Msg.RedirectUri)
+	if err != nil {
+		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
+
+	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
+		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
 
 	// TODO implement me
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authenticate is unimplemented"))
