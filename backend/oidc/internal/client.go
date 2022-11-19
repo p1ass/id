@@ -20,6 +20,15 @@ type Client struct {
 	redirectURIs []url.URL
 }
 
+func NewClient(ID string, hashedPassword HashedPassword, redirectURIs []url.URL) (*Client, error) {
+	c := &Client{
+		ID:             ID,
+		hashedPassword: hashedPassword,
+		redirectURIs:   redirectURIs,
+	}
+	return c, nil
+}
+
 func (c *Client) IdenticalRedirectURI(redirectURI url.URL) error {
 	for _, uri := range c.redirectURIs {
 		if uri == redirectURI {

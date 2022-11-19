@@ -1,8 +1,10 @@
-package internal
+package internal_test
 
 import (
 	"net/url"
 	"testing"
+
+	"github.com/p1ass/id/backend/oidc/internal"
 )
 
 func TestClient_IdenticalRedirectURI(t *testing.T) {
@@ -65,8 +67,10 @@ func TestClient_IdenticalRedirectURI(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			c := &Client{
-				redirectURIs: tt.fields.redirectURIs,
+			c, err := internal.NewClient(
+				"ID", internal.HashedPassword{}, tt.fields.redirectURIs)
+			if err != nil {
+				t.Fatal(err)
 			}
 			if err := c.IdenticalRedirectURI(tt.args.redirectURI); (err != nil) != tt.wantErr {
 				t.Errorf("IdenticalRedirectURI() error = %v, wantErr %v", err, tt.wantErr)
