@@ -18,15 +18,17 @@ type OIDCServer struct {
 	codeDatastore   internal.CodeDatastore
 }
 
-// OAuth 2.0 Error Responses defined by RFC6749.
+// OAuth 2.0 Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
 //
 // [RFC 6749 Section 4.1.2.1]: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+// [OIDC Core Section 3.1.2.6]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
 var (
 	ErrInvalidRequest          = errors.New("invalid_request")
 	ErrInvalidRequestURI       = errors.New("invalid_request_uri")
 	ErrInvalidScope            = errors.New("invalid_scope")
 	ErrUnsupportedResponseType = errors.New("unsupported_response_type")
 	ErrUnauthorizedClient      = errors.New("unauthorized_client")
+	ErrConsentRequired         = errors.New("consent_required")
 )
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
@@ -71,6 +73,13 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
+	}
+
+	// We must check user consent after other request parameter validation
+	// in order to display the error page before displaying the authorize page.
+	if !req.Msg.Consented {
+		log.Info(ctx).Msg("user not consented")
+		return nil, connect.NewError(connect.CodePermissionDenied, ErrConsentRequired)
 	}
 
 	code := internal.NewAuthorizationCode(client, *redirectURI)
