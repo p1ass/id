@@ -29,9 +29,12 @@ const (
 type OIDCPrivateServiceClient interface {
 	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
 	// Possible error code:
-	// - InvalidArgument: "invalid scope"
-	// - InvalidArgument: "invalid request"
-	// - PermissionDenied: "unauthorized client"
+	// - InvalidArgument: "invalid_scope"
+	// - InvalidArgument: "invalid_request_uri"
+	// - InvalidArgument: "unsupported_response_type"
+	// - InvalidArgument: "invalid_request"
+	// - PermissionDenied: "unauthorized_client"
+	// - PermissionDenied: "consent_required"
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
@@ -81,9 +84,12 @@ func (c *oIDCPrivateServiceClient) Exchange(ctx context.Context, req *connect_go
 type OIDCPrivateServiceHandler interface {
 	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
 	// Possible error code:
-	// - InvalidArgument: "invalid scope"
-	// - InvalidArgument: "invalid request"
-	// - PermissionDenied: "unauthorized client"
+	// - InvalidArgument: "invalid_scope"
+	// - InvalidArgument: "invalid_request_uri"
+	// - InvalidArgument: "unsupported_response_type"
+	// - InvalidArgument: "invalid_request"
+	// - PermissionDenied: "unauthorized_client"
+	// - PermissionDenied: "consent_required"
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)

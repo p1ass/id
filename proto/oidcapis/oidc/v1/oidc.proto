@@ -12,6 +12,7 @@ service OIDCPrivateService {
   // - InvalidArgument: "unsupported_response_type"
   // - InvalidArgument: "invalid_request"
   // - PermissionDenied: "unauthorized_client"
+  // - PermissionDenied: "consent_required"
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {}
   // Exchange exchanges authorization code into access token and ID Token
   // Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
@@ -33,6 +34,8 @@ message AuthenticateRequest {
   // This prevents CSRF attack, so MUST be specified.
   // (In original spec, requirement level is RECOMMENDED, but we force to specify the state)
   string state = 5;
+  // Whether user consents to authorize/authenticate the client.
+  bool consented = 6;
 }
 
 // Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#AuthResponse)
