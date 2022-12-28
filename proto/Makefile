@@ -19,3 +19,4 @@ deps:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+	sudo npm install --global @bufbuild/protoc-gen-connect-web @bufbuild/protoc-gen-es

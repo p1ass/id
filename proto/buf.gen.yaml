@@ -15,3 +15,9 @@ plugins:
   - name: doc
     out: ./
     opt: markdown,spec.md
+  - name: es
+    out: ../ui/gen
+    opt: target=ts
+  - name: connect-web
+    out: ../ui/gen
+    opt: target=ts
