@@ -6,6 +6,8 @@ import {
 import {OIDCPrivateService} from "../../../gen/oidc/v1/oidc_connectweb";
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
+import {PartialMessage, PlainMessage} from "@bufbuild/protobuf";
+import {AuthenticateRequest} from "../../../gen/oidc/v1/oidc_pb";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
@@ -19,14 +21,15 @@ const AuthorizePage =  () => {
   const router = useRouter()
   useEffect(()=>{
     const authenticateAsync = async ()=>{
-      const res = await client.authenticate({
+      let req: PlainMessage<AuthenticateRequest> = {
         scopes: ['openid'],
         clientId: 'dummy_client_id',
         state: 'dummy_state',
         responseTypes: ['code'],
         redirectUri: 'http://localhost:3000/oauth2/callback',
         consented:true,
-      })
+      };
+      const res = await client.authenticate(req)
       // TODO: 302 Foundでリダイレクトしたい
       router.push('/oauth2/callback',{
       })
