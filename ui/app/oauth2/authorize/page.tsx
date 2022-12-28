@@ -5,6 +5,7 @@ import {
 } from "@bufbuild/connect-web";
 import {OIDCPrivateService} from "../../../gen/oidc/v1/oidc_connectweb";
 import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
@@ -15,11 +16,20 @@ const transport = createConnectTransport({
 const client = createPromiseClient(OIDCPrivateService, transport);
 
 const AuthorizePage =  () => {
+  const router = useRouter()
   useEffect(()=>{
     const authenticateAsync = async ()=>{
       const res = await client.authenticate({
+        scopes: ['openid'],
+        clientId: 'dummy_client_id',
+        state: 'dummy_state',
+        responseTypes: ['code'],
+        redirectUri: 'http://localhost:3000/oauth2/callback',
+        consented:true,
       })
-      console.log(res)
+      // TODO: 302 Foundでリダイレクトしたい
+      router.push('/oauth2/callback',{
+      })
     }
     authenticateAsync()
   },[])
