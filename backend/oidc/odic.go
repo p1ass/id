@@ -32,7 +32,10 @@ var (
 )
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
-	return &OIDCServer{}
+	return &OIDCServer{
+		clientDatastore: internal.NewInMemoryClientDatastore(),
+		codeDatastore:   internal.NewInMemoryCodeDatastore(),
+	}
 }
 
 func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
