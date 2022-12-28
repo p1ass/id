@@ -1,0 +1,21 @@
+name: Caching with npm
+
+on:
+  push:
+    paths:
+      - 'ui/**'
+      - 'proto/**'
+      - '.github/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: ui/yarn.lock
+      - run: cd ui && yarn
+      - run: cd ui && yarn lint

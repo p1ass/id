@@ -1,6 +1,10 @@
 # https://docs.buf.build/ci-cd/github-actions
 name: buf-pull-request
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - 'proto/**'
+      - '.github/**'
 jobs:
   build:
     runs-on: ubuntu-latest

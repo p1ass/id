@@ -1,6 +1,11 @@
 name: go-test
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - 'proto/**'
+      - '.github/**'
 
 jobs:
   build:
