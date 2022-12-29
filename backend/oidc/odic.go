@@ -33,7 +33,7 @@ var (
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	clientDatastore := internal.NewInMemoryClientDatastore()
-	redirectUri, err := url.Parse("http://localhost:3000/oauth2/callback")
+	redirectUri, err := url.Parse("https://localhost:8443/test/a/local/callback")
 	client, err := internal.NewClient("dummy_client_id", internal.NewHashedPassword("dummy_password"), []url.URL{
 		*redirectUri,
 	})
