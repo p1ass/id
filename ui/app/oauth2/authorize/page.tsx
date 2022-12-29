@@ -1,9 +1,10 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
-type Props = {
-  searchParams: {
+type PageProps = {
+  // Workaround: If we remove ? from searchParams, we get compile error
+  searchParams?: {
     client_id?: string
     redirect_uri?: string
     scope?: string
@@ -13,7 +14,10 @@ type Props = {
   }
 }
 
-const AuthorizePage = async ({ searchParams }: Props) => {
+const AuthorizePage = async ({ searchParams }: PageProps) => {
+  if (!searchParams) {
+    return notFound()
+  }
   console.log(searchParams)
   const req: PlainMessage<AuthenticateRequest> = {
     scopes: searchParams.scope ? [searchParams.scope] : [],
