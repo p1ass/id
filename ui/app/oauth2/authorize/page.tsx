@@ -1,6 +1,7 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
 import { notFound, redirect } from 'next/navigation'
+import { authenticate } from '../../../lib/api/oidc'
 
 type PageProps = {
   // Workaround: If we remove ? from searchParams, we get compile error
@@ -27,22 +28,12 @@ const AuthorizePage = async ({ searchParams }: PageProps) => {
     redirectUri: searchParams.redirect_uri ?? '',
     consented: true,
   }
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  }
 
-  const res = await fetch('http://local.p1ass.com:8080/oidc.v1.OIDCPrivateService/Authenticate', {
-    method: 'POST',
-    body: JSON.stringify(req),
-    headers: headers,
-    cache: 'no-store',
-  })
-  const resBody = await res.json()
-  console.log(resBody)
-  if (res.status !== 200) {
+  const res = await authenticate(req)
+
+  if (!res.success) {
     const errorQuery = new URLSearchParams()
-    errorQuery.set('error', resBody.code)
+    errorQuery.set('error', res.error.rawMessage)
     if (searchParams.state) {
       errorQuery.set('state', searchParams.state)
     }
@@ -50,7 +41,7 @@ const AuthorizePage = async ({ searchParams }: PageProps) => {
   }
 
   const query = new URLSearchParams()
-  query.set('code', resBody.code)
+  query.set('code', res.response.code)
   if (searchParams.state) {
     query.set('state', searchParams.state)
   }
