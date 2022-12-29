@@ -42,6 +42,7 @@ const AuthorizePage = async ({ searchParams }: Props) => {
     method: 'POST',
     body: JSON.stringify(req),
     headers: headers,
+    cache: 'no-store',
   })
   const resBody = await res.json()
   console.log(resBody)
