@@ -79,6 +79,7 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedResponseType)
 	}
 
+	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
