@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {
-  matcher: '/:path*',
+  matcher: '/:path*'
 }
 
 export function middleware(req: NextRequest) {
@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
   return new Response('Basic Auth Required', {
     status: 401,
     headers: {
-      'WWW-Authenticate': 'Basic realm="Secure Area"',
-    },
+      'WWW-Authenticate': 'Basic realm="Secure Area"'
+    }
   })
 }

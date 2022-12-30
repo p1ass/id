@@ -1,6 +1,7 @@
 import { PlainMessage } from '@bufbuild/protobuf'
-import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
 import { notFound, redirect } from 'next/navigation'
+
+import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
 import { authenticate } from '../../../lib/api/oidc'
 
 type PageProps = {
@@ -21,14 +22,12 @@ const AuthorizePage = async ({ searchParams }: PageProps) => {
   }
   console.log(searchParams)
   const req: PlainMessage<AuthenticateRequest> = {
-    // TODO: scopeはスペース区切りになっている
     scopes: searchParams.scope ? [searchParams.scope] : [],
     clientId: searchParams.client_id ?? '',
     state: searchParams.state ?? '',
-    // TODO: responseTypesはスペース区切りになってる
     responseTypes: searchParams.response_type ? [searchParams.response_type] : [],
     redirectUri: searchParams.redirect_uri ?? '',
-    consented: true,
+    consented: true
   }
 
   const res = await authenticate(req)
@@ -39,7 +38,6 @@ const AuthorizePage = async ({ searchParams }: PageProps) => {
     if (searchParams.state) {
       errorQuery.set('state', searchParams.state)
     }
-    // TODO: 正しいリダイレクト
     redirect(`${searchParams.redirect_uri ?? ''}?${errorQuery.toString()}`)
   }
 
