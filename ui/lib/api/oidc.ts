@@ -1,7 +1,8 @@
+// OIDCPrivateService is designed as a private API,
+// so it is intended to be requested by the Next.js server, not browser.
 import { ConnectError, codeFromString } from '@bufbuild/connect-web'
 import { PlainMessage } from '@bufbuild/protobuf'
 
-import 'server-only'
 import { AuthenticateRequest, AuthenticateResponse } from '../../gen/oidc/v1/oidc_pb'
 
 const jsonHeaders = {
