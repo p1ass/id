@@ -9,9 +9,11 @@ import { convertToSearchParam } from '../../../lib/searchParam'
 const AuthorizeParameterSchema = z.object({
   client_id: z.string().min(1),
   redirect_uri: z.string().url(),
+  //The value of the scope parameter is expressed as a list of space-
+  // delimited, case-sensitive strings.
+  scope: z.string().min(1),
   // Used to maintain state between the request and the callback.
   // This prevents CSRF attack, so MUST be specified.
-  scope: z.string().min(1),
   state: z.optional(z.string().min(1)),
   response_type: z.string().min(1)
 })
@@ -61,9 +63,9 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>)
   const consented = true
 
   const authenticateReq: PlainMessage<AuthenticateRequest> = {
-    scopes: [parameter.scope],
+    scopes: parameter.scope.split(' '),
     clientId: parameter.client_id,
-    responseTypes: [parameter.response_type],
+    responseTypes: parameter.response_type.split(' '),
     redirectUri: parameter.redirect_uri,
     consented: consented
   }
