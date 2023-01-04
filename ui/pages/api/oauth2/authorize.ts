@@ -1,22 +1,10 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { z } from 'zod'
 
 import { AuthenticateRequest } from '../../../generated/oidc/v1/oidc_pb'
-import { authenticate } from '../../../lib/api/oidc'
+import { authenticate } from '../../../lib/oauth2/connect'
+import { AuthorizeRequestSchema } from '../../../lib/oauth2/types'
 import { convertToSearchParam } from '../../../lib/searchParam'
-
-const AuthorizeParameterSchema = z.object({
-  client_id: z.string().min(1),
-  redirect_uri: z.string().url(),
-  //The value of the scope parameter is expressed as a list of space-
-  // delimited, case-sensitive strings.
-  scope: z.string().min(1),
-  // Used to maintain state between the request and the callback.
-  // This prevents CSRF attack, so MUST be specified.
-  state: z.optional(z.string().min(1)),
-  response_type: z.string().min(1)
-})
 
 // ErrorJson is only used when redirectUri is invalid.
 // TODO: should render error html not json.
@@ -36,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 async function getHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) {
-  const parsed = AuthorizeParameterSchema.safeParse(req.query)
+  const parsed = AuthorizeRequestSchema.safeParse(req.query)
   if (!parsed.success) {
     console.error(parsed.error)
     return res.status(400).send({ error: 'invalid_request' })
@@ -52,7 +40,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) 
 }
 
 async function postHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) {
-  const parsed = AuthorizeParameterSchema.safeParse(req.body)
+  const parsed = AuthorizeRequestSchema.safeParse(req.body)
   if (!parsed.success) {
     console.error(parsed.error)
     return res.status(400).send({ error: 'invalid_request' })
