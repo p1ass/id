@@ -1,6 +1,7 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { buildAuthorizeConsentUri } from '../../../app/oauth2/authorize/consent/route'
 import { AuthenticateRequest } from '../../../generated/oidc/v1/oidc_pb'
 import { authenticate } from '../../../lib/oauth2/connect'
 import { AuthorizeRequestSchema } from '../../../lib/oauth2/types'
@@ -34,8 +35,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) 
   const consented = false
 
   if (!consented) {
-    const redirectSearchParam = convertToSearchParam(parsed.data)
-    return res.redirect(302, `/oauth2/authorize/consent?${redirectSearchParam.toString()}`)
+    return res.redirect(302, buildAuthorizeConsentUri(parsed.data))
   }
 }
 

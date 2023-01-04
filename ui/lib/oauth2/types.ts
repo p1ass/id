@@ -13,3 +13,5 @@ export const AuthorizeRequestSchema = z.object({
   state: z.optional(z.string().min(1)),
   response_type: z.string().min(1)
 })
+
+export type AuthorizeRequest = z.infer<typeof AuthorizeRequestSchema>

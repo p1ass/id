@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import { AuthorizeRequestSchema } from '../../../../lib/oauth2/types'
+import { buildAuthorizePath } from '../../../../pages/api/oauth2/route'
 
 type PageProps = {
   // Workaround: If we remove ? from searchParams, we get compile error
@@ -23,7 +24,7 @@ const AuthorizePage = async ({ searchParams }: PageProps) => {
   return (
     <div>
       <h2>Consent Page</h2>
-      <form action="/api/oauth2/authorize" method="post">
+      <form action={buildAuthorizePath()} method="post">
         <div>
           <label htmlFor="client_id">client_id: </label>
           <input name="client_id" value={parameter.client_id} />
