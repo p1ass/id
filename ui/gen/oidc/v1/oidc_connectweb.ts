@@ -3,13 +3,8 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import {
-  AuthenticateRequest,
-  AuthenticateResponse,
-  ExchangeRequest,
-  ExchangeResponse
-} from "./oidc_pb";
-import {MethodKind} from "@bufbuild/protobuf";
+import { AuthenticateRequest, AuthenticateResponse, ExchangeRequest, ExchangeResponse } from "./oidc_pb.js";
+import { MethodKind } from "@bufbuild/protobuf";
 
 /**
  * OIDCPrivateService provides APIs to finish OpenID Connect flow.
@@ -22,13 +17,16 @@ export const OIDCPrivateService = {
   methods: {
     /**
      * Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
-     * Possible error code:
+     * Possible error code (defined by OAuth2.0 or OpenID Connect):
      * - InvalidArgument: "invalid_scope"
      * - InvalidArgument: "invalid_request_uri"
      * - InvalidArgument: "unsupported_response_type"
      * - InvalidArgument: "invalid_request"
      * - PermissionDenied: "unauthorized_client"
      * - PermissionDenied: "consent_required"
+     * Possible error code (defined by Self):
+     * - InvalidArgument: "invalid_client_id"
+     * - InvalidArgument: "invalid_redirect_uri"
      *
      * @generated from rpc oidc.v1.OIDCPrivateService.Authenticate
      */
@@ -52,3 +50,4 @@ export const OIDCPrivateService = {
     },
   }
 } as const;
+

@@ -42,18 +42,9 @@ export class AuthenticateRequest extends Message<AuthenticateRequest> {
   redirectUri = "";
 
   /**
-   * Used to maintain state between the request and the callback.
-   * This prevents CSRF attack, so MUST be specified.
-   * (In original spec, requirement level is RECOMMENDED, but we force to specify the state)
-   *
-   * @generated from field: string state = 5;
-   */
-  state = "";
-
-  /**
    * Whether user consents to authorize/authenticate the client.
    *
-   * @generated from field: bool consented = 6;
+   * @generated from field: bool consented = 5;
    */
   consented = false;
 
@@ -69,8 +60,7 @@ export class AuthenticateRequest extends Message<AuthenticateRequest> {
     { no: 2, name: "response_types", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
     { no: 3, name: "client_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "redirect_uri", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "state", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "consented", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 5, name: "consented", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AuthenticateRequest {
@@ -103,13 +93,6 @@ export class AuthenticateResponse extends Message<AuthenticateResponse> {
    */
   code = "";
 
-  /**
-   * state equals AuthenticateRequest state value.
-   *
-   * @generated from field: string state = 2;
-   */
-  state = "";
-
   constructor(data?: PartialMessage<AuthenticateResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -119,7 +102,6 @@ export class AuthenticateResponse extends Message<AuthenticateResponse> {
   static readonly typeName = "oidc.v1.AuthenticateResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "code", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "state", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AuthenticateResponse {

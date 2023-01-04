@@ -6,13 +6,16 @@ package oidc.v1;
 // It is designed as a private API, so it is intended to be requested by the Next.js server, not browser.
 service OIDCPrivateService {
   // Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
-  // Possible error code:
+  // Possible error code (defined by OAuth2.0 or OpenID Connect):
   // - InvalidArgument: "invalid_scope"
   // - InvalidArgument: "invalid_request_uri"
   // - InvalidArgument: "unsupported_response_type"
   // - InvalidArgument: "invalid_request"
   // - PermissionDenied: "unauthorized_client"
   // - PermissionDenied: "consent_required"
+  // Possible error code (defined by Self):
+  // - InvalidArgument: "invalid_client_id"
+  // - InvalidArgument: "invalid_redirect_uri"
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {}
   // Exchange exchanges authorization code into access token and ID Token
   // Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
@@ -30,20 +33,14 @@ message AuthenticateRequest {
   // Redirection URI to which the response will be sent.
   // This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/
   string redirect_uri = 4;
-  // Used to maintain state between the request and the callback.
-  // This prevents CSRF attack, so MUST be specified.
-  // (In original spec, requirement level is RECOMMENDED, but we force to specify the state)
-  string state = 5;
   // Whether user consents to authorize/authenticate the client.
-  bool consented = 6;
+  bool consented = 5;
 }
 
 // Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#AuthResponse)
 message AuthenticateResponse {
   // OAuth 2.0 Authorization Code
   string code = 1;
-  // state equals AuthenticateRequest state value.
-  string state = 2;
 }
 
 // Spec: [OpenID Connect Core 1.0 Section 3.1.3.1.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenRequest)
