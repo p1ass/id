@@ -24,11 +24,16 @@ type OIDCServer struct {
 // [OIDC Core Section 3.1.2.6]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
 var (
 	ErrInvalidRequest          = errors.New("invalid_request")
-	ErrInvalidRequestURI       = errors.New("invalid_request_uri")
 	ErrInvalidScope            = errors.New("invalid_scope")
 	ErrUnsupportedResponseType = errors.New("unsupported_response_type")
 	ErrUnauthorizedClient      = errors.New("unauthorized_client")
 	ErrConsentRequired         = errors.New("consent_required")
+)
+
+// Self defined error.
+var (
+	ErrInvalidClientID    = errors.New("invalid_client_id")
+	ErrInvalidRedirectURI = errors.New("invalid_redirect_uri")
 )
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
@@ -54,7 +59,7 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("client id = %s is not found", req.Msg.ClientId)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
 	}
 
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
@@ -84,12 +89,12 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 
 	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequestURI)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 
 	// We must check user consent after other request parameter validation

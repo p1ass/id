@@ -1,6 +1,5 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { URLSearchParams } from 'next/dist/compiled/@edge-runtime/primitives/url'
 import { z } from 'zod'
 
 import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
