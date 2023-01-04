@@ -1,22 +1,30 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { URLSearchParams } from 'next/dist/compiled/@edge-runtime/primitives/url'
 import { z } from 'zod'
 
 import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
 import { authenticate } from '../../../lib/api/oidc'
+import { convertToSearchParam } from '../../../lib/searchParam'
 
 const AuthorizeParameterSchema = z.object({
-  client_id: z.string(),
+  client_id: z.string().min(1),
   redirect_uri: z.string().url(),
-  scope: z.string(),
-  state: z.nullable(z.string()),
-  response_type: z.string()
+  //The value of the scope parameter is expressed as a list of space-
+  // delimited, case-sensitive strings.
+  scope: z.string().min(1),
+  // Used to maintain state between the request and the callback.
+  // This prevents CSRF attack, so MUST be specified.
+  state: z.optional(z.string().min(1)),
+  response_type: z.string().min(1)
 })
 
-type AuthorizeParameter = z.infer<typeof AuthorizeParameterSchema>
+// ErrorJson is only used when redirectUri is invalid.
+// TODO: should render error html not json.
+type ErrorJson = {
+  error: 'invalid_request' | 'method_not_allowed'
+}
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) {
   if (req.method === 'GET') {
     return getHandler(req, res)
   }
@@ -24,62 +32,69 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return postHandler(req, res)
   }
 
-  return res.status(405).json('{"message": "method not allowed"}')
+  return res.status(405).json({ error: 'method_not_allowed' })
 }
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
-  // TODO: implement. Copy from app/oauth2/authorize
-  // If user consent is needed, redirect to consent page.
-  // Otherwise, redirect to redirectUri
+async function getHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) {
   const parsed = AuthorizeParameterSchema.safeParse(req.query)
   if (!parsed.success) {
-    return res.status(400).send('{"message": "invalid request"}')
+    console.error(parsed.error)
+    return res.status(400).send({ error: 'invalid_request' })
   }
-  const parameter: AuthorizeParameter = parsed.data
 
-  // TODO: ここの組み立てもう少しうまく型安全にやりたい
-  const redirectSearchParam = new URLSearchParams()
-  redirectSearchParam.set('client_id', parameter.client_id)
-  redirectSearchParam.set('redirect_uri', parameter.redirect_uri)
-  redirectSearchParam.set('scope', parameter.scope)
-  if (parameter.state) {
-    redirectSearchParam.set('state', parameter.state)
+  // TODO: consented is not always false
+  const consented = false
+
+  if (!consented) {
+    const redirectSearchParam = convertToSearchParam(parsed.data)
+    return res.redirect(302, `/oauth2/authorize/consent?${redirectSearchParam.toString()}`)
   }
-  redirectSearchParam.set('response_type', parameter.response_type)
-  return res.redirect(302, `/oauth2/authorize/consent?${redirectSearchParam.toString()}`)
 }
 
-async function postHandler(req: NextApiRequest, res: NextApiResponse) {
+async function postHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>) {
   const parsed = AuthorizeParameterSchema.safeParse(req.body)
   if (!parsed.success) {
-    return res.status(400).send('{"message": "invalid request"}')
+    console.error(parsed.error)
+    return res.status(400).send({ error: 'invalid_request' })
   }
-  const parameter: AuthorizeParameter = parsed.data
+  const parameter = parsed.data
+
+  // TODO: consented is not always true
+  const consented = true
 
   const authenticateReq: PlainMessage<AuthenticateRequest> = {
-    scopes: [parameter.scope],
+    scopes: parameter.scope.split(' '),
     clientId: parameter.client_id,
-    state: parameter.state ?? '',
-    responseTypes: [parameter.response_type],
+    responseTypes: parameter.response_type.split(' '),
     redirectUri: parameter.redirect_uri,
-    consented: true
+    consented: consented
   }
 
   const authenticateRes = await authenticate(authenticateReq)
 
   if (!authenticateRes.success) {
-    const errorQuery = new URLSearchParams()
-    errorQuery.set('error', authenticateRes.error.rawMessage)
-    if (parameter.state) {
-      errorQuery.set('state', parameter.state)
+    // The authorization server MUST NOT automatically redirect the user-agent to the
+    // invalid redirection URI.
+    if (['invalid_client_id', 'invalid_redirect_uri'].includes(authenticateRes.error.rawMessage)) {
+      console.error(authenticateRes.error)
+      return res.status(400).send({ error: 'invalid_request' })
     }
+
+    // If the resource owner denies the access request or if the request
+    // fails for reasons other than a missing or invalid redirection URI,
+    // the authorization server informs the client by adding the
+    // parameters to the query component of the redirection URI using the
+    // "application/x-www-form-urlencoded" format.
+    const errorQuery = convertToSearchParam({
+      error: authenticateRes.error.rawMessage,
+      state: parameter.state
+    })
     return res.redirect(302, `${parameter.redirect_uri}?${errorQuery.toString()}`)
   }
 
-  const query = new URLSearchParams()
-  query.set('code', authenticateRes.response.code)
-  if (parameter.state) {
-    query.set('state', parameter.state)
-  }
+  const query = convertToSearchParam({
+    code: authenticateRes.response.code,
+    state: parameter.state
+  })
   return res.redirect(302, `${parameter.redirect_uri}?${query.toString()}`)
 }

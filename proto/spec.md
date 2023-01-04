@@ -34,7 +34,6 @@ Spec: [OpenID Connect Core 1.0 Section 3.1.2.1.](https://openid.net/specs/openid
 | response_types | [string](#string) | repeated | Supported type is only `code` (Authorization Code Flow) |
 | client_id | [string](#string) |  | OAuth 2.0 Client identifier |
 | redirect_uri | [string](#string) |  | Redirection URI to which the response will be sent. This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/ |
-| state | [string](#string) |  | Used to maintain state between the request and the callback. This prevents CSRF attack, so MUST be specified. (In original spec, requirement level is RECOMMENDED, but we force to specify the state) |
 | consented | [bool](#bool) |  | Whether user consents to authorize/authenticate the client. |
 
 
@@ -51,7 +50,6 @@ Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | code | [string](#string) |  | OAuth 2.0 Authorization Code |
-| state | [string](#string) |  | state equals AuthenticateRequest state value. |
 
 
 
@@ -108,7 +106,7 @@ It is designed as a private API, so it is intended to be requested by the Next.j
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code Possible error code: - InvalidArgument: &#34;invalid_scope&#34; - InvalidArgument: &#34;invalid_request_uri&#34; - InvalidArgument: &#34;unsupported_response_type&#34; - InvalidArgument: &#34;invalid_request&#34; - PermissionDenied: &#34;unauthorized_client&#34; - PermissionDenied: &#34;consent_required&#34; |
+| Authenticate | [AuthenticateRequest](#oidc-v1-AuthenticateRequest) | [AuthenticateResponse](#oidc-v1-AuthenticateResponse) | Authenticate authenticates the end user and generates OAuth2.0 Authorization Code Possible error code (defined by OAuth2.0 or OpenID Connect): - InvalidArgument: &#34;invalid_scope&#34; - InvalidArgument: &#34;invalid_request_uri&#34; - InvalidArgument: &#34;unsupported_response_type&#34; - InvalidArgument: &#34;invalid_request&#34; - PermissionDenied: &#34;unauthorized_client&#34; - PermissionDenied: &#34;consent_required&#34; Possible error code (defined by Self): - InvalidArgument: &#34;invalid_client_id&#34; - InvalidArgument: &#34;invalid_redirect_uri&#34; |
 | Exchange | [ExchangeRequest](#oidc-v1-ExchangeRequest) | [ExchangeResponse](#oidc-v1-ExchangeResponse) | Exchange exchanges authorization code into access token and ID Token Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint) |
 
  

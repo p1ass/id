@@ -28,13 +28,16 @@ const (
 // OIDCPrivateServiceClient is a client for the oidc.v1.OIDCPrivateService service.
 type OIDCPrivateServiceClient interface {
 	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
-	// Possible error code:
+	// Possible error code (defined by OAuth2.0 or OpenID Connect):
 	// - InvalidArgument: "invalid_scope"
 	// - InvalidArgument: "invalid_request_uri"
 	// - InvalidArgument: "unsupported_response_type"
 	// - InvalidArgument: "invalid_request"
 	// - PermissionDenied: "unauthorized_client"
 	// - PermissionDenied: "consent_required"
+	// Possible error code (defined by Self):
+	// - InvalidArgument: "invalid_client_id"
+	// - InvalidArgument: "invalid_redirect_uri"
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
@@ -83,13 +86,16 @@ func (c *oIDCPrivateServiceClient) Exchange(ctx context.Context, req *connect_go
 // OIDCPrivateServiceHandler is an implementation of the oidc.v1.OIDCPrivateService service.
 type OIDCPrivateServiceHandler interface {
 	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
-	// Possible error code:
+	// Possible error code (defined by OAuth2.0 or OpenID Connect):
 	// - InvalidArgument: "invalid_scope"
 	// - InvalidArgument: "invalid_request_uri"
 	// - InvalidArgument: "unsupported_response_type"
 	// - InvalidArgument: "invalid_request"
 	// - PermissionDenied: "unauthorized_client"
 	// - PermissionDenied: "consent_required"
+	// Possible error code (defined by Self):
+	// - InvalidArgument: "invalid_client_id"
+	// - InvalidArgument: "invalid_redirect_uri"
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
