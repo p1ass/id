@@ -7,8 +7,8 @@ import (
 
 	"github.com/bufbuild/connect-go"
 
-	oidcv1 "github.com/p1ass/id/backend/gen/oidc/v1"
-	"github.com/p1ass/id/backend/gen/oidc/v1/oidcv1connect"
+	oidcv1 "github.com/p1ass/id/backend/generated/oidc/v1"
+	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
 	"github.com/p1ass/id/backend/log"
 	"github.com/p1ass/id/backend/oidc/internal"
 )

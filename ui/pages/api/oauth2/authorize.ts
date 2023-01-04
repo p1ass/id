@@ -2,7 +2,7 @@ import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-import { AuthenticateRequest } from '../../../gen/oidc/v1/oidc_pb'
+import { AuthenticateRequest } from '../../../generated/oidc/v1/oidc_pb'
 import { authenticate } from '../../../lib/api/oidc'
 import { convertToSearchParam } from '../../../lib/searchParam'
 

@@ -7,17 +7,17 @@ managed:
       - buf.build/googleapis/googleapis
 plugins:
   - name: go
-    out: ../backend/gen
+    out: ../backend/generated
     opt: paths=source_relative
   - name: connect-go
-    out: ../backend/gen
+    out: ../backend/generated
     opt: paths=source_relative
   - name: doc
     out: ./
     opt: markdown,spec.md
   - name: es
-    out: ../ui/gen
+    out: ../ui/generated
     opt: target=ts
   - name: connect-web
-    out: ../ui/gen
+    out: ../ui/generated
     opt: target=ts

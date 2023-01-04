@@ -3,7 +3,7 @@
 import { ConnectError, codeFromString } from '@bufbuild/connect-web'
 import { PlainMessage } from '@bufbuild/protobuf'
 
-import { AuthenticateRequest, AuthenticateResponse } from '../../gen/oidc/v1/oidc_pb'
+import { AuthenticateRequest, AuthenticateResponse } from '../../generated/oidc/v1/oidc_pb'
 
 const jsonHeaders = {
   Accept: 'application/json',
