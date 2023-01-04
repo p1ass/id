@@ -78,6 +78,11 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse<ErrorJson>)
       return res.status(400).send({ error: 'invalid_request' })
     }
 
+    // If the resource owner denies the access request or if the request
+    // fails for reasons other than a missing or invalid redirection URI,
+    // the authorization server informs the client by adding the
+    // parameters to the query component of the redirection URI using the
+    // "application/x-www-form-urlencoded" format.
     const errorQuery = convertToSearchParam({
       error: authenticateRes.error.rawMessage,
       state: parameter.state
