@@ -1,27 +1,23 @@
-import { notFound } from 'next/navigation'
+'use client'
+import { useSearchParams } from 'next/navigation'
 
 import { AuthorizeRequestSchema } from '../../../../lib/oauth2/types'
 import { buildAuthorizePath } from '../../../../pages/api/oauth2/route'
-
-type PageProps = {
-  // Workaround: If we remove ? from searchParams, we get compile error
-  searchParams?: { [key: string]: string | string[] | undefined }
-}
 
 const labelClassName = 'mb-1 block pr-4 font-bold text-gray-500 md:mb-0'
 const inputClassName =
   'w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 py-2 px-4 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none'
 
-const AuthorizePage = async ({ searchParams }: PageProps) => {
-  if (!searchParams) {
-    return notFound()
-  }
+const AuthorizePage = () => {
+  const searchParams = useSearchParams()
 
-  const parsed = AuthorizeRequestSchema.safeParse(searchParams)
+  const parsed = AuthorizeRequestSchema.safeParse(Object.fromEntries(searchParams.entries()))
+  console.log(parsed)
   if (!parsed.success) {
     // TODO: Error Handling
-    console.log(parsed.error)
-    throw parsed.error
+    console.warn(parsed.error)
+    // throw parsed.error
+    return <div />
   }
   const parameter = parsed.data
 
