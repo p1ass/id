@@ -18,7 +18,7 @@ type OIDCServer struct {
 	codeDatastore   internal.CodeDatastore
 }
 
-// OAuth 2.0 Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
+// OAuth 2.0 Authorization Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
 //
 // [RFC 6749 Section 4.1.2.1]: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
 // [OIDC Core Section 3.1.2.6]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
@@ -28,6 +28,15 @@ var (
 	ErrUnsupportedResponseType = errors.New("unsupported_response_type")
 	ErrUnauthorizedClient      = errors.New("unauthorized_client")
 	ErrConsentRequired         = errors.New("consent_required")
+)
+
+// OAuth 2.0 Token Error Responses defined by RFC6749.
+//
+// [RFC 6749 Section 5.2]: https://www.rfc-editor.org/rfc/rfc6749#section-5.2
+var (
+	ErrInvalidClient        = errors.New("invalid_client")
+	ErrInvalidGrant         = errors.New("invalid_grant")
+	ErrUnsupportedGrantType = errors.New("unsupported_grant_type")
 )
 
 // Self defined error.
@@ -85,7 +94,6 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	}
 
 	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
-	// TODO: これはredirectUriのエラーではなくrequestUriのエラー
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
@@ -116,6 +124,65 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 }
 
 func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
-	// TODO implement me
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("exchange is unimplemented"))
+	// TODO: If the client type is confidential or the client was issued client
+	//   credentials (or assigned other authentication requirements), the
+	//   client MUST authenticate with the authorization server as described
+	//   in Section 3.2.1.
+	clientID := "TODO: fetch client and verify client is authenticated"
+
+	grantType, err := internal.NewGrantType(req.Msg.GrantType)
+	if err != nil {
+		log.Info(ctx).Err(err).Str("grantType", req.Msg.GrantType).Msgf("invalid grant type")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
+	// When authorization code grant, value MUST be set to "authorization_code".
+	if grantType != internal.GrantTypeAuthorizationCode {
+		log.Info(ctx).Str("grantType", string(grantType)).Msgf("grant type should be authorization code")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedGrantType)
+	}
+
+	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
+	redirectURI, err := url.Parse(req.Msg.RedirectUri)
+	if err != nil {
+		log.Info(ctx).Err(err).Str("redirectURI", req.Msg.RedirectUri).Msgf("redirectURI is invalid")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
+	}
+
+	// verify that the authorization code is valid, and ensure that the "redirect_uri" parameter is present and identical if the
+	// "redirect_uri" parameter was included in the initial authorization request
+	code, err := s.codeDatastore.Fetch(req.Msg.Code, clientID, *redirectURI)
+	if err != nil {
+		log.Info(ctx).Err(err).Str("code", req.Msg.Code).Msgf("code which is satisfied requirements not found")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
+	}
+	if code.Expired() {
+		log.Info(ctx).Msgf("code is expired")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
+	}
+	if _, err = code.Use(); err != nil {
+		log.Info(ctx).Err(err).Msgf("failed to use code")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
+	}
+	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
+
+	// TODO:  The authorization server MUST include the HTTP "Cache-Control"
+	//   response header field [RFC2616] with a value of "no-store" in any
+	//   response containing tokens, credentials, or other sensitive
+	//   information, as well as the "Pragma" response header field [RFC2616]
+	//   with a value of "no-cache".
+
+	return connect.NewResponse[oidcv1.ExchangeResponse](&oidcv1.ExchangeResponse{
+		// TODO: implement
+		AccessToken: "",
+		// TODO: implement
+		IdToken: "",
+		// TokenType MUST be Bearer, as specified in Bearer Token Usage [RFC6750]
+		//
+		// [RFC6750]: https://www.rfc-editor.org/rfc/rfc6750
+		TokenType: string(internal.AccessTokenTypeBearer),
+		// TODO: implement
+		ExpiresIn: 0,
+		// TODO: implement
+		RefreshToken: nil,
+	}), nil
 }
