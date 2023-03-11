@@ -1,7 +1,7 @@
 import { PlainMessage } from '@bufbuild/protobuf'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { buildAuthorizeConsentUri } from '../../../app/oauth2/authorize/consent/route'
+import { buildAuthorizeConsentUri } from '../../../app/oauth2/authorize/consent/router'
 import { AuthenticateRequest } from '../../../generated/oidc/v1/oidc_pb'
 import { authenticate } from '../../../lib/oauth2/connect'
 import { AuthorizeRequestSchema } from '../../../lib/oauth2/types'

@@ -6,6 +6,9 @@ import { buildAuthorizePath } from '../../../../pages/api/oauth2/route'
 
 const AuthorizePage = () => {
   const searchParams = useSearchParams()
+  if (!searchParams) {
+    throw new Error('unexpected error: searchParams is null')
+  }
 
   const parsed = AuthorizeRequestSchema.safeParse(Object.fromEntries(searchParams.entries()))
   console.log(parsed)
