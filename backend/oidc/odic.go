@@ -18,7 +18,7 @@ type OIDCServer struct {
 	codeDatastore   internal.CodeDatastore
 }
 
-// OAuth 2.0 Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
+// OAuth 2.0 Authorization Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
 //
 // [RFC 6749 Section 4.1.2.1]: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
 // [OIDC Core Section 3.1.2.6]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
@@ -28,6 +28,15 @@ var (
 	ErrUnsupportedResponseType = errors.New("unsupported_response_type")
 	ErrUnauthorizedClient      = errors.New("unauthorized_client")
 	ErrConsentRequired         = errors.New("consent_required")
+)
+
+// OAuth 2.0 Token Error Responses defined by RFC6749.
+//
+// [RFC 6749 Section 5.2]: https://www.rfc-editor.org/rfc/rfc6749#section-5.2
+var (
+	ErrInvalidClient        = errors.New("invalid_client")
+	ErrInvalidGrant         = errors.New("invalid_grant")
+	ErrUnsupportedGrantType = errors.New("unsupported_grant_type")
 )
 
 // Self defined error.
@@ -116,6 +125,15 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 }
 
 func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+	grantType, err := internal.NewGrantType(req.Msg.GrantType)
+	if err != nil {
+		log.Info(ctx).Msgf("invalid grant type: %s", req.Msg.GrantType)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
+	}
+	if grantType != internal.GrantTypeAuthorizationCode {
+		log.Info(ctx).Msgf("grant type should be authorization code, but got is %s", grantType)
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedGrantType)
+	}
 	// TODO implement me
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("exchange is unimplemented"))
 }
