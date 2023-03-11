@@ -94,7 +94,6 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	}
 
 	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
-	// TODO: これはredirectUriのエラーではなくrequestUriのエラー
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
 		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
@@ -125,15 +124,42 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 }
 
 func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+	// TODO: If the client type is confidential or the client was issued client
+	//   credentials (or assigned other authentication requirements), the
+	//   client MUST authenticate with the authorization server as described
+	//   in Section 3.2.1.
+	clientID := "TODO: fetch client and verify client is authenticated"
+
 	grantType, err := internal.NewGrantType(req.Msg.GrantType)
 	if err != nil {
-		log.Info(ctx).Msgf("invalid grant type: %s", req.Msg.GrantType)
+		log.Info(ctx).Err(err).Str("grantType", req.Msg.GrantType).Msgf("invalid grant type")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
+	// When authorization code grant, value MUST be set to "authorization_code".
 	if grantType != internal.GrantTypeAuthorizationCode {
-		log.Info(ctx).Msgf("grant type should be authorization code, but got is %s", grantType)
+		log.Info(ctx).Str("grantType", string(grantType)).Msgf("grant type should be authorization code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedGrantType)
 	}
+
+	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
+	redirectURI, err := url.Parse(req.Msg.RedirectUri)
+	if err != nil {
+		log.Info(ctx).Err(err).Str("redirectURI", req.Msg.RedirectUri).Msgf("redirectURI is invalid")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
+	}
+
+	// verify that the authorization code is valid, and ensure that the "redirect_uri" parameter is present and identical if the
+	// "redirect_uri" parameter was included in the initial authorization request
+	code, err := s.codeDatastore.Fetch(req.Msg.Code, clientID, *redirectURI)
+	if err != nil {
+		log.Info(ctx).Err(err).Str("code", req.Msg.Code).Msgf("code which is satisfied requirements not found")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
+	}
+	if code.Expired() {
+		log.Info(ctx).Msgf("code is expired")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
+	}
+
 	// TODO implement me
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("exchange is unimplemented"))
 }
