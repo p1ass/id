@@ -17,10 +17,18 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
-"@bufbuild/connect-web@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.6.0.tgz#1b09dd4347722f8eb2fa892c8f3031591a1aeac1"
-  integrity sha512-dfiXt7ye/sC1MwBtCyR1XYZHjKvVpCxLP/HcnHYoa6POi+Ey1t058bCc14HdT2EpYEZYN7SW1M2tuZ5SnabmhA==
+"@bufbuild/connect-node@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@bufbuild/connect-node/-/connect-node-0.8.3.tgz#c7ffeec4d46c47802cf140825294019540e42ded"
+  integrity sha512-ldOHnWThAy5fT+20ZI74yALJ1z5DpyQ2UArQlMLXkkNIyBoEna3YfPxqoTqGBU4IdfFckwrQXDT+/KE4arJMIA==
+  dependencies:
+    "@bufbuild/connect" "0.8.3"
+    headers-polyfill "^3.1.2"
+
+"@bufbuild/connect@0.8.3", "@bufbuild/connect@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@bufbuild/connect/-/connect-0.8.3.tgz#5eed5b2231ce7b0f9e9c504ea231d21eb7266ec4"
+  integrity sha512-lk4JVYxRPRvELAiYIc4fALI2qh/gG8j0yYTSKzBkmy+DuJ7xvWQ81DX7zo1WhXaZRxiC9VDU3jfFwgbwYrd2eQ==
 
 "@bufbuild/protobuf@^1.0.0":
   version "1.0.0"
@@ -1218,6 +1226,11 @@ has@^1.0.3:
   integrity sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
   dependencies:
     function-bind "^1.1.1"
+
+headers-polyfill@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/headers-polyfill/-/headers-polyfill-3.1.2.tgz#9a4dcb545c5b95d9569592ef7ec0708aab763fbe"
+  integrity sha512-tWCK4biJ6hcLqTviLXVR9DTRfYGQMXEIUj3gwJ2rZ5wO/at3XtkI4g8mCvFdUF9l1KMBNCfmNAdnahm1cgavQA==
 
 ignore@^5.2.0:
   version "5.2.4"

@@ -1,16 +1,18 @@
 // OIDCPrivateService is designed as a private API,
 // so it is intended to be requested by the Next.js server, not browser.
-import { ConnectError, codeFromString } from '@bufbuild/connect-web'
+import { ConnectError, createPromiseClient } from '@bufbuild/connect'
+import { createConnectTransport } from '@bufbuild/connect-node'
 import { PlainMessage } from '@bufbuild/protobuf'
 
+import { OIDCPrivateService } from '../../generated/oidc/v1/oidc_connect'
 import { AuthenticateRequest, AuthenticateResponse } from '../../generated/oidc/v1/oidc_pb'
 
-const jsonHeaders = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json'
-}
-
 const baseUri = 'http://local.p1ass.com:8080'
+
+const transport = createConnectTransport({
+  httpVersion: '1.1',
+  baseUrl: baseUri
+})
 
 type AuthenticateResponseOrError =
   | { success: true; response: PlainMessage<AuthenticateResponse> }
@@ -19,19 +21,17 @@ type AuthenticateResponseOrError =
 export async function authenticate(
   req: PlainMessage<AuthenticateRequest>
 ): Promise<AuthenticateResponseOrError> {
-  const res = await fetch(`${baseUri}/oidc.v1.OIDCPrivateService/Authenticate`, {
-    method: 'POST',
-    body: JSON.stringify(req),
-    headers: jsonHeaders,
-    cache: 'no-store'
-  })
-  const resJson = await res.json()
-  console.log(resJson)
-  if (res.status !== 200) {
-    return {
-      error: new ConnectError(resJson.message, codeFromString(resJson.code)),
-      success: false
+  const client = createPromiseClient(OIDCPrivateService, transport)
+
+  try {
+    const res = await client.authenticate(req)
+    console.log(res.toJsonString())
+    return { response: res, success: true }
+  } catch (e) {
+    if (e instanceof ConnectError) {
+      return { error: e, success: false }
     }
+    console.error(e)
+    return { error: new ConnectError('unknown error'), success: false }
   }
-  return { response: resJson as PlainMessage<AuthenticateResponse>, success: true }
 }
