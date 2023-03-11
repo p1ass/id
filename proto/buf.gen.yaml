@@ -18,6 +18,6 @@ plugins:
   - name: es
     out: ../ui/generated
     opt: target=ts
-  - name: connect-web
+  - name: connect-es
     out: ../ui/generated
     opt: target=ts
