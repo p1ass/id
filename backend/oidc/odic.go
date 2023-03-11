@@ -159,7 +159,30 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 		log.Info(ctx).Msgf("code is expired")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
 	}
+	if _, err = code.Use(); err != nil {
+		log.Info(ctx).Err(err).Msgf("failed to use code")
+		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
+	}
+	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
 
-	// TODO implement me
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("exchange is unimplemented"))
+	// TODO:  The authorization server MUST include the HTTP "Cache-Control"
+	//   response header field [RFC2616] with a value of "no-store" in any
+	//   response containing tokens, credentials, or other sensitive
+	//   information, as well as the "Pragma" response header field [RFC2616]
+	//   with a value of "no-cache".
+
+	return connect.NewResponse[oidcv1.ExchangeResponse](&oidcv1.ExchangeResponse{
+		// TODO: implement
+		AccessToken: "",
+		// TODO: implement
+		IdToken: "",
+		// TokenType MUST be Bearer, as specified in Bearer Token Usage [RFC6750]
+		//
+		// [RFC6750]: https://www.rfc-editor.org/rfc/rfc6750
+		TokenType: string(internal.AccessTokenTypeBearer),
+		// TODO: implement
+		ExpiresIn: 0,
+		// TODO: implement
+		RefreshToken: nil,
+	}), nil
 }
