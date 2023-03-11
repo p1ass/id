@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/p1ass/id/backend/gen
+    default: github.com/p1ass/id/backend/generated
     except:
       - buf.build/googleapis/googleapis
 plugins:

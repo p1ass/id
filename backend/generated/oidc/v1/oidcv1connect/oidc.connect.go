@@ -8,7 +8,7 @@ import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	v1 "github.com/p1ass/id/backend/gen/oidc/v1"
+	v1 "github.com/p1ass/id/backend/generated/oidc/v1"
 	http "net/http"
 	strings "strings"
 )
