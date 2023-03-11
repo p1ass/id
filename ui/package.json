@@ -11,7 +11,7 @@
     "format:check": "prettier --check './**/*.{js,jsx,ts,tsx,json}'"
   },
   "dependencies": {
-    "@bufbuild/connect-web": "^0.6.0",
+    "@bufbuild/connect-web": "^0.8.3",
     "@bufbuild/protobuf": "^1.0.0",
     "@next/font": "13.1.6",
     "@types/node": "18.11.18",

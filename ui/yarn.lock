@@ -17,10 +17,17 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
-"@bufbuild/connect-web@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.6.0.tgz#1b09dd4347722f8eb2fa892c8f3031591a1aeac1"
-  integrity sha512-dfiXt7ye/sC1MwBtCyR1XYZHjKvVpCxLP/HcnHYoa6POi+Ey1t058bCc14HdT2EpYEZYN7SW1M2tuZ5SnabmhA==
+"@bufbuild/connect-web@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@bufbuild/connect-web/-/connect-web-0.8.3.tgz#0a67d2b505a202a658de920ddb9dc519ce8951ed"
+  integrity sha512-36FZ8L6e/oNUglIclhLu3mHceTXRHp/QB/Pnphzhc0SYkZFFyjGfRJfm+qq89dFns8krchtP8sTyqV8G7EaJEQ==
+  dependencies:
+    "@bufbuild/connect" "0.8.3"
+
+"@bufbuild/connect@0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@bufbuild/connect/-/connect-0.8.3.tgz#5eed5b2231ce7b0f9e9c504ea231d21eb7266ec4"
+  integrity sha512-lk4JVYxRPRvELAiYIc4fALI2qh/gG8j0yYTSKzBkmy+DuJ7xvWQ81DX7zo1WhXaZRxiC9VDU3jfFwgbwYrd2eQ==
 
 "@bufbuild/protobuf@^1.0.0":
   version "1.0.0"
