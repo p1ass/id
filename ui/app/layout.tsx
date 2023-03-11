@@ -1,16 +1,17 @@
 import './globals.css'
+import type { Metadata } from 'next'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      {/*
-        <head /> will contain the components returned by the nearest parent
-        head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-      */}
-      <head>
-        <title>p1ass ID</title>
-      </head>
+    <html lang="ja">
       <body>{children}</body>
     </html>
   )
+}
+
+export const metadata: Metadata = {
+  title: 'p1ass ID',
+  description: 'OAuth 2.0 / OpenID Connect Provider',
+  viewport: { width: 'device-width', initialScale: 1 },
+  icons: '/favicon.ico'
 }
