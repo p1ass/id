@@ -32,3 +32,11 @@ provider "google" {
 }
 EOF
 }
+
+generate "tfvars" {
+  path      = "terraform.tfvars"
+  if_exists = "overwrite"
+  contents  = <<EOT
+google_cloud_project_id = "${get_env("GOOGLE_CLOUD_PROJECT_ID")}"
+EOT
+}

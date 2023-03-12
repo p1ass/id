@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/rs/cors"
 
@@ -27,8 +29,15 @@ func main() {
 	// Use h2c so we can serve HTTP/2 without TLS.
 	corsHandler := cors.Default().Handler(h2c.NewHandler(mux, &http2.Server{}))
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Info(context.Background()).Msgf("Starting server...")
+
 	err := http.ListenAndServe(
-		"localhost:8080",
+		fmt.Sprintf("0.0.0.0:%s", port),
 		corsHandler,
 	)
 	if err != nil {
