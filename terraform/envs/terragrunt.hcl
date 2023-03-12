@@ -26,7 +26,7 @@ terraform {
 }
 
 provider "google" {
-  project = get_env("GOOGLE_CLOUD_PROJECT_ID")
+  project = "${get_env("GOOGLE_CLOUD_PROJECT_ID")}"
   region  = "asia-northeast1"
   zone    = "asia-northeast1-a"
 }
