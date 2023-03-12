@@ -1,10 +1,11 @@
 package internal_test
 
 import (
-	"github.com/Songmu/flextime"
-	"github.com/p1ass/id/backend/oidc/internal"
 	"testing"
 	"time"
+
+	"github.com/Songmu/flextime"
+	"github.com/p1ass/id/backend/oidc/internal"
 )
 
 func TestAccessToken_ExpiresInSec(t *testing.T) {

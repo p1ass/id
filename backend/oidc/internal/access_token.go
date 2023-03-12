@@ -3,9 +3,10 @@ package internal
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"github.com/Songmu/flextime"
 	"io"
 	"time"
+
+	"github.com/Songmu/flextime"
 )
 
 type (

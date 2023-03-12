@@ -1,8 +1,9 @@
 package randgenerator_test
 
 import (
-	"github.com/p1ass/id/backend/pkg/randgenerator"
 	"testing"
+
+	"github.com/p1ass/id/backend/pkg/randgenerator"
 )
 
 func TestMustGenerateToString_GeneratesDifferentValue(t *testing.T) {

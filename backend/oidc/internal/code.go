@@ -2,11 +2,11 @@ package internal
 
 import (
 	"errors"
-	"github.com/p1ass/id/backend/pkg/randgenerator"
 	"net/url"
 	"time"
 
 	"github.com/Songmu/flextime"
+	"github.com/p1ass/id/backend/pkg/randgenerator"
 )
 
 // AuthorizationCode is a authorization code defined by [RFC 6749 Section 4.1.2].

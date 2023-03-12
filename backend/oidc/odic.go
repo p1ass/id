@@ -5,11 +5,12 @@ import (
 	"errors"
 	"net/url"
 
+	"github.com/p1ass/id/backend/pkg/log"
+
 	"github.com/bufbuild/connect-go"
 
 	oidcv1 "github.com/p1ass/id/backend/generated/oidc/v1"
 	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
-	"github.com/p1ass/id/backend/log"
 	"github.com/p1ass/id/backend/oidc/internal"
 )
 

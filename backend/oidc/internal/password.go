@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/base64"
 	"errors"
+
 	"github.com/p1ass/id/backend/pkg/randgenerator"
 	"golang.org/x/crypto/argon2"
 )
