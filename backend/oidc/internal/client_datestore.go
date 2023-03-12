@@ -8,6 +8,7 @@ import (
 var ErrClientNotFound = errors.New("client not found")
 
 type ClientDatastore interface {
+	// FetchClient fetches a client. If not found, return ErrClientNotFound.
 	FetchClient(id string) (*Client, error)
 	SaveClient(client *Client) error
 }

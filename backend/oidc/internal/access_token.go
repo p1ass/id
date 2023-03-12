@@ -1,6 +1,12 @@
 package internal
 
-import "fmt"
+import (
+	"crypto/rand"
+	"encoding/base64"
+	"github.com/Songmu/flextime"
+	"io"
+	"time"
+)
 
 type (
 	// AccessTokenType represents OAuth 2.0 access token type.
@@ -8,7 +14,25 @@ type (
 
 	// AccessToken represents OAUth 2.0 access token.
 	AccessToken struct {
+		Token string
+		// TokenType MUST be Bearer, as specified in Bearer Token Usage [RFC6750]
+		//
+		// [RFC6750]: https://www.rfc-editor.org/rfc/rfc6750
+		TokenType AccessTokenType
+
+		// sub is a subject identifier (user id)
+		sub string
+		// aud is that this AccessToken is intended for. (client id)
+		aud    string
+		expiry time.Time
+
+		scopes Scopes
 	}
+)
+
+const (
+	accessTokenByteLength = 32
+	accessTokenExpiration = 15 * time.Minute
 )
 
 const (
@@ -16,17 +40,34 @@ const (
 	AccessTokenTypeBearer  AccessTokenType = "Bearer"
 )
 
-var accessTokenTypeMap = map[string]AccessTokenType{
-	string(AccessTokenTypeBearer): AccessTokenTypeBearer,
-}
-
-func NewAccessToken() (*AccessToken, error) {
-	return &AccessToken{}, nil
-}
-
-func NewAccessTokenType(str string) (AccessTokenType, error) {
-	if r, ok := accessTokenTypeMap[str]; ok {
-		return r, nil
+func NewAccessToken(sub string, aud *Client, scopes Scopes) (*AccessToken, error) {
+	token := make([]byte, accessTokenByteLength)
+	_, err := io.ReadFull(rand.Reader, token)
+	if err != nil {
+		panic(err)
 	}
-	return AccessTokenTypeUnknown, fmt.Errorf("%s is not valid access token type", str)
+
+	now := flextime.Now().UTC()
+	return &AccessToken{
+		Token:     base64.RawURLEncoding.WithPadding(base64.NoPadding).EncodeToString(token),
+		TokenType: AccessTokenTypeBearer,
+		sub:       sub,
+		aud:       aud.ID,
+		expiry:    now.Add(accessTokenExpiration),
+		scopes:    scopes,
+	}, nil
+}
+
+func (t *AccessToken) Expired() bool {
+	now := flextime.Now().UTC()
+	return now.After(t.expiry)
+}
+
+func (t *AccessToken) ExpiresInSec() uint32 {
+	now := flextime.Now().UTC()
+	seconds := t.expiry.Sub(now).Seconds()
+	if seconds < 0 {
+		return 0
+	}
+	return uint32(seconds)
 }
