@@ -1,11 +1,9 @@
 package internal
 
 import (
-	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"io"
-
+	"github.com/p1ass/id/backend/pkg/randgenerator"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -42,7 +40,7 @@ var ErrMismatchedHashAndPassword = errors.New("password is not the hash of the g
 
 // NewHashedPassword generates hashed password and salt.
 func NewHashedPassword(rawPassword RawPassword) *HashedPassword {
-	salt := mustGenerateSalt(argon2SaltByte)
+	salt := randgenerator.MustGenerateToString(argon2SaltByte)
 	hashedPassword := base64.RawURLEncoding.EncodeToString(argon2.IDKey(
 		[]byte(rawPassword),
 		[]byte(salt),
@@ -88,14 +86,4 @@ func (p HashedPassword) ComparePassword(other RawPassword) error {
 		return ErrMismatchedHashAndPassword
 	}
 	return nil
-}
-
-func mustGenerateSalt(saltByte uint16) string {
-	unencodedSalt := make([]byte, saltByte)
-	_, err := io.ReadFull(rand.Reader, unencodedSalt)
-	if err != nil {
-		panic(err)
-	}
-
-	return base64.RawURLEncoding.EncodeToString(unencodedSalt)
 }
