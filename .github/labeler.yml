@@ -8,3 +8,5 @@ proto:
   - proto/**/*
 ui:
   - ui/**/*
+terraform:
+  - terraform/**/*
