@@ -4,9 +4,49 @@ import (
 	"testing"
 	"time"
 
+	"github.com/p1ass/id/backend/pkg/ascii"
+
 	"github.com/Songmu/flextime"
 	"github.com/p1ass/id/backend/oidc/internal"
 )
+
+func TestNewAccessToken_TokenTypeMustBeBearer(t *testing.T) {
+	t.Parallel()
+
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got.TokenType != internal.AccessTokenTypeBearer {
+		t.Errorf("token type must be bearer, but got is %s", got.TokenType)
+	}
+}
+func TestNewAccessToken_TokenShouldBeASCII(t *testing.T) {
+	t.Parallel()
+
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !ascii.IsASCII(got.Token) {
+		t.Errorf("token should be ascii, but got %s is not ascii", got.Token)
+	}
+}
+
+func TestNewAccessToken_TokenShouldNotBeEmpty(t *testing.T) {
+	t.Parallel()
+
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got.Token == "" {
+		t.Errorf("token should not be empty, but got is empty")
+	}
+}
 
 func TestAccessToken_ExpiresInSec(t *testing.T) {
 	t.Parallel()
