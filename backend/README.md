@@ -32,3 +32,11 @@ ko build --local --base-import-paths .
 # or you can run container locally:
 docker run -p 8080:8080 $(ko build --local --base-import-paths .)
 ```
+
+### Push to Google Artifact Registry
+```shell
+cp .env.template .env
+# Edit environment values
+vim .env
+ko build --base-import-paths . --platform=linux/amd64,linux/arm64 
+```

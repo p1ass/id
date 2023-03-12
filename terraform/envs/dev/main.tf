@@ -6,13 +6,18 @@ resource "google_cloud_run_v2_service" "backend" {
   template {
     containers {
       name  = "${local.env}-backend"
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      image = "${local.location}-docker.pkg.dev/${var.google_cloud_project_id}/${var.container_images_repository_id}/backend:latest"
+
+      ports {
+        name           = "h2c"
+        container_port = 8080
+      }
     }
     scaling {
       min_instance_count = 0
       max_instance_count = 1
     }
-    timeout = "5s"
+    timeout = "3s"
   }
 
   traffic {
