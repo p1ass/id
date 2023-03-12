@@ -1,14 +1,12 @@
 package internal
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"errors"
-	"io"
 	"net/url"
 	"time"
 
 	"github.com/Songmu/flextime"
+	"github.com/p1ass/id/backend/pkg/randgenerator"
 )
 
 // AuthorizationCode is a authorization code defined by [RFC 6749 Section 4.1.2].
@@ -21,7 +19,7 @@ type AuthorizationCode struct {
 	clientID    string
 	redirectURI url.URL
 	issued      time.Time
-	expired     time.Time
+	expiry      time.Time
 }
 
 type UsedAuthorizationCode struct {
@@ -40,25 +38,20 @@ var (
 )
 
 func NewAuthorizationCode(client *Client, redirectURI url.URL) *AuthorizationCode {
-	authorizationCode := make([]byte, authorizationCodeByteLength)
-	_, err := io.ReadFull(rand.Reader, authorizationCode)
-	if err != nil {
-		panic(err)
-	}
 
 	now := flextime.Now().UTC()
 	return &AuthorizationCode{
-		Code:        base64.RawURLEncoding.WithPadding(base64.NoPadding).EncodeToString(authorizationCode),
+		Code:        randgenerator.MustGenerateToString(authorizationCodeByteLength),
 		clientID:    client.ID,
 		redirectURI: redirectURI,
 		issued:      now,
-		expired:     now.Add(authorizationCodeExpiration),
+		expiry:      now.Add(authorizationCodeExpiration),
 	}
 }
 
 func (c *AuthorizationCode) Expired() bool {
 	now := flextime.Now().UTC()
-	return now.After(c.expired)
+	return now.After(c.expiry)
 }
 
 // TODO: implement

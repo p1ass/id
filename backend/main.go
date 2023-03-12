@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/rs/cors"
+	"github.com/p1ass/id/backend/pkg/log"
 
-	"github.com/p1ass/id/backend/log"
+	"github.com/rs/cors"
 
 	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
 	"github.com/p1ass/id/backend/oidc"

@@ -5,11 +5,12 @@ import (
 	"errors"
 	"net/url"
 
+	"github.com/p1ass/id/backend/pkg/log"
+
 	"github.com/bufbuild/connect-go"
 
 	oidcv1 "github.com/p1ass/id/backend/generated/oidc/v1"
 	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
-	"github.com/p1ass/id/backend/log"
 	"github.com/p1ass/id/backend/oidc/internal"
 )
 
@@ -67,8 +68,12 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
-		log.Info(ctx).Err(err).Msgf("client id = %s is not found", req.Msg.ClientId)
-		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
+		if errors.Is(err, internal.ErrClientNotFound) {
+			log.Info(ctx).Err(err).Str("clientID", req.Msg.ClientId).Msgf("client is not found")
+			return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
+		}
+		log.Error(ctx).Err(err).Str("clientID", req.Msg.ClientId).Msgf("failed to fetch client")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to fetch client"))
 	}
 
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
@@ -129,6 +134,15 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 	//   client MUST authenticate with the authorization server as described
 	//   in Section 3.2.1.
 	clientID := "TODO: fetch client and verify client is authenticated"
+	client, err := s.clientDatastore.FetchClient(clientID)
+	if err != nil {
+		if errors.Is(err, internal.ErrClientNotFound) {
+			log.Info(ctx).Err(err).Str("clientID", clientID).Msgf("client is not found")
+			return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
+		}
+		log.Error(ctx).Err(err).Str("clientID", clientID).Msgf("failed to fetch client")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to fetch client"))
+	}
 
 	grantType, err := internal.NewGrantType(req.Msg.GrantType)
 	if err != nil {
@@ -160,29 +174,37 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
 	}
 	if _, err = code.Use(); err != nil {
-		log.Info(ctx).Err(err).Msgf("failed to use code")
+		log.Error(ctx).Err(err).Msgf("failed to use code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
 	}
 	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
 
-	// TODO:  The authorization server MUST include the HTTP "Cache-Control"
+	// TODO: pass correct sub and scopes
+	accessToken, err := internal.NewAccessToken("dummy_sub", client, []internal.Scope{internal.ScopeOpenId})
+	if err != nil {
+		log.Error(ctx).Err(err).Msgf("failed to initiate access token")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))
+	}
+
+	// TODO: save access token
+
+	res := connect.NewResponse[oidcv1.ExchangeResponse](&oidcv1.ExchangeResponse{
+		AccessToken: accessToken.Token,
+		// TODO: implement
+		IdToken:   "",
+		TokenType: string(accessToken.TokenType),
+		ExpiresIn: accessToken.ExpiresInSec(),
+		// TODO: implement
+		RefreshToken: nil,
+	})
+
+	// The authorization server MUST include the HTTP "Cache-Control"
 	//   response header field [RFC2616] with a value of "no-store" in any
 	//   response containing tokens, credentials, or other sensitive
 	//   information, as well as the "Pragma" response header field [RFC2616]
 	//   with a value of "no-cache".
+	res.Trailer().Set("Cache-Control", "no-store")
+	res.Trailer().Set("Pragma", "no-store")
 
-	return connect.NewResponse[oidcv1.ExchangeResponse](&oidcv1.ExchangeResponse{
-		// TODO: implement
-		AccessToken: "",
-		// TODO: implement
-		IdToken: "",
-		// TokenType MUST be Bearer, as specified in Bearer Token Usage [RFC6750]
-		//
-		// [RFC6750]: https://www.rfc-editor.org/rfc/rfc6750
-		TokenType: string(internal.AccessTokenTypeBearer),
-		// TODO: implement
-		ExpiresIn: 0,
-		// TODO: implement
-		RefreshToken: nil,
-	}), nil
+	return res, nil
 }

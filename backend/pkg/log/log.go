@@ -17,3 +17,6 @@ func Init() {
 func Info(ctx context.Context) *zerolog.Event {
 	return log.Info()
 }
+func Error(ctx context.Context) *zerolog.Event {
+	return log.Error()
+}

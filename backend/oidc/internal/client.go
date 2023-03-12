@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/p1ass/id/backend/log"
+	"github.com/p1ass/id/backend/pkg/log"
 )
 
 var (
