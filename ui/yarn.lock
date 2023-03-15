@@ -30,10 +30,10 @@
   resolved "https://registry.yarnpkg.com/@bufbuild/connect/-/connect-0.8.3.tgz#5eed5b2231ce7b0f9e9c504ea231d21eb7266ec4"
   integrity sha512-lk4JVYxRPRvELAiYIc4fALI2qh/gG8j0yYTSKzBkmy+DuJ7xvWQ81DX7zo1WhXaZRxiC9VDU3jfFwgbwYrd2eQ==
 
-"@bufbuild/protobuf@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-1.0.0.tgz#b25c045f8554f92c3723d5bb28e3a2538662f51b"
-  integrity sha512-oH3jHBrZ6to8Qf4zLg7O8KqSY42kQZNBRXJRMp5uSi0mqE4L8NbyMnZHeOsbXmTb0xpptRyH11LfS+KeVhXzAA==
+"@bufbuild/protobuf@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-1.1.1.tgz#ed2a8d25975ccc405393c96aaf707c1897e249d3"
+  integrity sha512-1dS2m3jabfW2XL2K6//41wZkO4XJOZtpe0bKLuta0BvK5LxNRyUBSSN5835n3bIFiNJKFWhDnzZEMrV7QVGFfQ==
 
 "@eslint/eslintrc@^1.4.1":
   version "1.4.1"
