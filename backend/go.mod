@@ -10,7 +10,7 @@ require (
 	github.com/rs/zerolog v1.29.0
 	golang.org/x/crypto v0.7.0
 	golang.org/x/net v0.8.0
-	google.golang.org/protobuf v1.29.0
+	google.golang.org/protobuf v1.30.0
 )
 
 require (
