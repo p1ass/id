@@ -4,16 +4,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/p1ass/id/backend/pkg/ascii"
-
 	"github.com/Songmu/flextime"
 	"github.com/p1ass/id/backend/oidc/internal"
+	"github.com/p1ass/id/backend/pkg/ascii"
 )
 
 func TestNewAccessToken_TokenTypeMustBeBearer(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,10 +21,11 @@ func TestNewAccessToken_TokenTypeMustBeBearer(t *testing.T) {
 		t.Errorf("token type must be bearer, but got is %s", got.TokenType)
 	}
 }
+
 func TestNewAccessToken_TokenShouldBeASCII(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestNewAccessToken_TokenShouldBeASCII(t *testing.T) {
 func TestNewAccessToken_TokenShouldNotBeEmpty(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestNewAccessToken_TokenShouldNotBeEmpty(t *testing.T) {
 	}
 }
 
-func TestAccessToken_ExpiresInSec(t *testing.T) {
+func TestAccessToken_ExpiresInSec(t *testing.T) { //nolint:tparallel
 	t.Parallel()
 
 	createdTime := flextime.Now().UTC()
@@ -71,10 +71,10 @@ func TestAccessToken_ExpiresInSec(t *testing.T) {
 	}
 	for _, tt := range tests {
 		tt := tt
-		t.Run(tt.name, func(t1 *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			flextime.Fix(createdTime)
 
-			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -82,7 +82,7 @@ func TestAccessToken_ExpiresInSec(t *testing.T) {
 			flextime.Fix(tt.now)
 
 			if got := at.ExpiresInSec(); got != tt.want {
-				t1.Errorf("ExpiresInSec() = %v, want %v", got, tt.want)
+				t.Errorf("ExpiresInSec() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -109,12 +109,13 @@ func TestAccessToken_Expired(t *testing.T) {
 			want: true,
 		},
 	}
+
 	for _, tt := range tests {
 		tt := tt
-		t.Run(tt.name, func(t1 *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			flextime.Fix(createdTime)
 
-			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenId})
+			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -122,7 +123,7 @@ func TestAccessToken_Expired(t *testing.T) {
 			flextime.Fix(tt.now)
 
 			if got := at.Expired(); got != tt.want {
-				t1.Errorf("Expired() = %v, want %v", got, tt.want)
+				t.Errorf("Expired() = %v, want %v", got, tt.want)
 			}
 		})
 	}

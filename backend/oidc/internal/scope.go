@@ -18,12 +18,12 @@ type (
 
 const (
 	ScopeUnknown Scope = "unknown"
-	ScopeOpenId  Scope = "openid"
+	ScopeOpenID  Scope = "openid"
 	ScopeEmail   Scope = "email"
 )
 
 var scopeMap = map[string]Scope{
-	string(ScopeOpenId): ScopeOpenId,
+	string(ScopeOpenID): ScopeOpenID,
 	string(ScopeEmail):  ScopeEmail,
 }
 
@@ -42,6 +42,7 @@ func NewScopes(strs []string) (Scopes, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		scopes = append(scopes, s)
 	}
 	return scopes, nil
@@ -55,7 +56,7 @@ func NewScopes(strs []string) (Scopes, error) {
 // [OpenID Connect 1.0 Core Section 3.1.2.1.]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 func (scopes Scopes) ContainsOpenId() bool {
 	for _, s := range scopes {
-		if s == ScopeOpenId {
+		if s == ScopeOpenID {
 			return true
 		}
 	}

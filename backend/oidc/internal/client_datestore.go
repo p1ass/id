@@ -28,7 +28,7 @@ func (d *inMemoryClientDatastore) FetchClient(id string) (*Client, error) {
 	if !ok {
 		return nil, ErrClientNotFound
 	}
-	return value.(*Client), nil
+	return value.(*Client), nil //nolint:forcetypeassert
 }
 
 func (d *inMemoryClientDatastore) SaveClient(client *Client) error {

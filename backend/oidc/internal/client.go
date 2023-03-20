@@ -44,7 +44,7 @@ func NewClient(ID string, hashedPassword *HashedPassword, redirectURIs []url.URL
 	return c, nil
 }
 
-// Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient
+// Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient.
 func (c *Client) Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error) {
 	req := &http.Request{
 		Header: header,

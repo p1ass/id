@@ -26,5 +26,4 @@ func WithCloudLoggingSpanContext(ctx context.Context, projectID string) context.
 		Bool("logging.googleapis.com/trace_sampled", spanContext.IsSampled()).
 		Logger().
 		WithContext(ctx)
-
 }

@@ -13,5 +13,6 @@ func MustGenerateToString(byteLength uint) string {
 	if err != nil {
 		panic(err)
 	}
+
 	return base64.RawURLEncoding.WithPadding(base64.NoPadding).EncodeToString(randBytes)
 }

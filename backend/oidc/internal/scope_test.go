@@ -20,11 +20,11 @@ func TestNewScope(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "should return ScopeOpenId when openid",
+			name: "should return ScopeOpenID when openid",
 			args: args{
 				str: "openid",
 			},
-			want:    internal.ScopeOpenId,
+			want:    internal.ScopeOpenID,
 			wantErr: false,
 		},
 		{
@@ -69,7 +69,7 @@ func TestNewScopes(t *testing.T) {
 			args: args{
 				strs: []string{"openid", "email"},
 			},
-			want:    []internal.Scope{internal.ScopeOpenId, internal.ScopeEmail},
+			want:    []internal.Scope{internal.ScopeOpenID, internal.ScopeEmail},
 			wantErr: false,
 		},
 		{
@@ -107,7 +107,7 @@ func TestScopes_ContainsOpenId(t *testing.T) {
 	}{
 		{
 			name:   "should return true when contains openid",
-			scopes: internal.Scopes{internal.ScopeOpenId, internal.ScopeEmail},
+			scopes: internal.Scopes{internal.ScopeOpenID, internal.ScopeEmail},
 			want:   true,
 		},
 		{

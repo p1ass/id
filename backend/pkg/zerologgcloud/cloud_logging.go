@@ -6,17 +6,17 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var logLevelSeverity = map[zerolog.Level]string{
-	zerolog.DebugLevel: "DEBUG",
-	zerolog.InfoLevel:  "INFO",
-	zerolog.WarnLevel:  "WARNING",
-	zerolog.ErrorLevel: "ERROR",
-	zerolog.PanicLevel: "CRITICAL",
-	zerolog.FatalLevel: "CRITICAL",
-}
-
 // SetCloudLoggingFieldFormat sets zerolog field names that are compatible with the Cloud Logging format.
 func SetCloudLoggingFieldFormat() {
+	logLevelSeverity := map[zerolog.Level]string{
+		zerolog.DebugLevel: "DEBUG",
+		zerolog.InfoLevel:  "INFO",
+		zerolog.WarnLevel:  "WARNING",
+		zerolog.ErrorLevel: "ERROR",
+		zerolog.PanicLevel: "CRITICAL",
+		zerolog.FatalLevel: "CRITICAL",
+	}
+
 	zerolog.LevelFieldName = "severity"
 	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {
 		return logLevelSeverity[l]

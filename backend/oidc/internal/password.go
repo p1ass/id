@@ -56,20 +56,22 @@ func NewHashedPassword(rawPassword RawPassword) *HashedPassword {
 	}
 }
 
+const masked = "[masked]"
+
 func (p RawPassword) String() string {
-	return "[masked]"
+	return masked
 }
 
 func (p RawPassword) GoString() string {
-	return "[masked]"
+	return masked
 }
 
 func (p HashedPassword) String() string {
-	return "[masked]"
+	return masked
 }
 
 func (p HashedPassword) GoString() string {
-	return "[masked]"
+	return masked
 }
 
 // ComparePassword compares the given raw password with it.

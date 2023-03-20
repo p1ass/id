@@ -13,13 +13,13 @@ type (
 const (
 	ResponseUnknown     ResponseType = "unknown"
 	ResponseTypeCode    ResponseType = "code"
-	ResponseTypeIdToken ResponseType = "id_token"
+	ResponseTypeIDToken ResponseType = "id_token"
 	ResponseTypeToken   ResponseType = "token"
 )
 
 var responseTypeMap = map[string]ResponseType{
 	string(ResponseTypeCode):    ResponseTypeCode,
-	string(ResponseTypeIdToken): ResponseTypeIdToken,
+	string(ResponseTypeIDToken): ResponseTypeIDToken,
 	string(ResponseTypeToken):   ResponseTypeToken,
 }
 

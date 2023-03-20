@@ -23,13 +23,10 @@ func TestNewHashedPasswordGeneratesDifferentValueEvenIfRawInputIsSame(t *testing
 func TestHashedPassword_ComparePassword(t *testing.T) {
 	t.Parallel()
 
-	type fields struct {
-		hashedPassword string
-		salt           string
-	}
 	type args struct {
 		other internal.RawPassword
 	}
+
 	tests := []struct {
 		name           string
 		hashedPassword *internal.HashedPassword

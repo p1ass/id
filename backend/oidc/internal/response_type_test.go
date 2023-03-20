@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-
 	"github.com/p1ass/id/backend/oidc/internal"
 )
 
@@ -70,7 +69,7 @@ func TestNewResponseTypes(t *testing.T) {
 			args: args{
 				strs: []string{"code", "id_token"},
 			},
-			want:    []internal.ResponseType{internal.ResponseTypeCode, internal.ResponseTypeIdToken},
+			want:    []internal.ResponseType{internal.ResponseTypeCode, internal.ResponseTypeIDToken},
 			wantErr: false,
 		},
 		{
@@ -113,7 +112,7 @@ func TestResponseTypes_ContainsOnlyCode(t *testing.T) {
 		},
 		{
 			name: "should return false when contains other response type",
-			s:    internal.ResponseTypes{internal.ResponseTypeCode, internal.ResponseTypeIdToken},
+			s:    internal.ResponseTypes{internal.ResponseTypeCode, internal.ResponseTypeIDToken},
 			want: false,
 		},
 	}
