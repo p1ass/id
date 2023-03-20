@@ -47,6 +47,9 @@ var (
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	clientDatastore := internal.NewInMemoryClientDatastore()
 	redirectURI, err := url.Parse("https://localhost:8443/test/a/local/callback")
+	if err != nil {
+		panic(err)
+	}
 	client, err := internal.NewClient("dummy_client_id", internal.NewHashedPassword("dummy_password"), []url.URL{
 		*redirectURI,
 	})
@@ -86,7 +89,7 @@ func (s *Server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.A
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	if !scopes.ContainsOpenId() {
+	if !scopes.ContainsOpenID() {
 		log.Ctx(ctx).Info().Msg("scopes does not contain openid scope")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}

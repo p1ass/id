@@ -12,7 +12,8 @@ linters:
     - godox # We want to commit TODO
     - dupl # Sometimes lines are duplicate
     - lll # Style
-    - tparallel # deprecated with paralleltest
+    - tparallel # duplicate with paralleltest
+    - cyclop # duplicate which gocyclo
     - varcheck # deprecated
     - maligned # deprecated
     - nosnakecase # deprecated

@@ -35,9 +35,9 @@ type AuthenticatedClient struct {
 	*Client
 }
 
-func NewClient(ID string, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
+func NewClient(id string, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
 	c := &Client{
-		ID:           ID,
+		ID:           id,
 		secret:       hashedPassword,
 		redirectURIs: redirectURIs,
 	}

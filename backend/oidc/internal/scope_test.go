@@ -120,8 +120,8 @@ func TestScopes_ContainsOpenId(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			if got := tt.scopes.ContainsOpenId(); got != tt.want {
-				t.Errorf("ContainsOpenId() = %v, want %v", got, tt.want)
+			if got := tt.scopes.ContainsOpenID(); got != tt.want {
+				t.Errorf("ContainsOpenID() = %v, want %v", got, tt.want)
 			}
 		})
 	}

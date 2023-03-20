@@ -17,7 +17,7 @@ func TestWithCloudLoggingSpanContext(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		ctx       context.Context
+		ctx       context.Context //nolint:containedctx
 		projectID string
 	}
 	tests := []struct {

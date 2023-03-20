@@ -31,7 +31,10 @@ func (d *inMemoryCodeDatastore) Fetch(code, clientID string, redirectURI url.URL
 	if !ok {
 		return nil, ErrCodeNotFound
 	}
-	gotCode := value.(*AuthorizationCode)
+	gotCode, ok := value.(*AuthorizationCode)
+	if !ok {
+		panic("type assertion error")
+	}
 	if gotCode.Expired() {
 		return nil, ErrCodeIsExpired
 	}
