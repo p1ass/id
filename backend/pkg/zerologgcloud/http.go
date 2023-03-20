@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/hlog"
 )
 
-func NewCloudLoggingRequestHandler() func(http.Handler) http.Handler {
+func NewRequestLoggingHandler() func(http.Handler) http.Handler {
 	return hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
 		log.Info().
 			Str("method", r.Method).

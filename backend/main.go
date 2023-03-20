@@ -47,7 +47,7 @@ func main() {
 	// Initialize logger
 	if cfg.Env == "local" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-		c = c.Append(zerologgcloud.NewCloudLoggingRequestHandler())
+		c = c.Append(zerologgcloud.NewRequestLoggingHandler())
 	} else {
 		// For Cloud Run
 		zerologgcloud.SetCloudLoggingFieldFormat()
