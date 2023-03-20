@@ -5,13 +5,11 @@ import (
 	"errors"
 	"net/url"
 
-	"github.com/p1ass/id/backend/pkg/log"
-
 	"github.com/bufbuild/connect-go"
-
 	oidcv1 "github.com/p1ass/id/backend/generated/oidc/v1"
 	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
 	"github.com/p1ass/id/backend/oidc/internal"
+	"github.com/rs/zerolog/log"
 )
 
 type OIDCServer struct {
@@ -69,57 +67,57 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
 		if errors.Is(err, internal.ErrClientNotFound) {
-			log.Info(ctx).Err(err).Str("clientID", req.Msg.ClientId).Msgf("client is not found")
+			log.Ctx(ctx).Info().Err(err).Str("clientID", req.Msg.ClientId).Msgf("client is not found")
 			return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
 		}
-		log.Error(ctx).Err(err).Str("clientID", req.Msg.ClientId).Msgf("failed to fetch client")
+		log.Ctx(ctx).Error().Err(err).Str("clientID", req.Msg.ClientId).Msgf("failed to fetch client")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to fetch client"))
 	}
 
 	scopes, err := internal.NewScopes(req.Msg.Scopes)
 	if err != nil {
-		log.Info(ctx).Err(err)
+		log.Ctx(ctx).Info().Err(err)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}
 
 	responseTypes, err := internal.NewResponseTypes(req.Msg.ResponseTypes)
 	if err != nil {
-		log.Info(ctx).Err(err)
+		log.Ctx(ctx).Info().Err(err)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
 	if !scopes.ContainsOpenId() {
-		log.Info(ctx).Msg("scopes does not contain openid scope")
+		log.Ctx(ctx).Info().Msg("scopes does not contain openid scope")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}
 
 	if !responseTypes.ContainsOnlyCode() {
-		log.Info(ctx).Msg("response types does not contain only code")
+		log.Ctx(ctx).Info().Msg("response types does not contain only code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedResponseType)
 	}
 
 	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
-		log.Info(ctx).Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
+		log.Ctx(ctx).Info().Err(err).Msgf("redirectURI %s is invalid", req.Msg.RedirectUri)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 
 	if err := client.IdenticalRedirectURI(*redirectURI); err != nil {
-		log.Info(ctx).Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
+		log.Ctx(ctx).Info().Err(err).Msgf("redirectURI %s is not registered in client %s", redirectURI, req.Msg.ClientId)
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 
 	// We must check user consent after other request parameter validation
 	// in order to display the error page before displaying the authorize page.
 	if !req.Msg.Consented {
-		log.Info(ctx).Msg("user not consented")
+		log.Ctx(ctx).Info().Msg("user not consented")
 		return nil, connect.NewError(connect.CodePermissionDenied, ErrConsentRequired)
 	}
 
 	code := internal.NewAuthorizationCode(client, *redirectURI)
 	if err := s.codeDatastore.Save(code); err != nil {
-		log.Info(ctx).Err(err).Msgf("failed to save code to datastore")
+		log.Ctx(ctx).Info().Err(err).Msgf("failed to save code to datastore")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to save code to datastore"))
 	}
 
@@ -137,28 +135,28 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 	client, err := s.clientDatastore.FetchClient(clientID)
 	if err != nil {
 		if errors.Is(err, internal.ErrClientNotFound) {
-			log.Info(ctx).Err(err).Str("clientID", clientID).Msgf("client is not found")
+			log.Ctx(ctx).Info().Err(err).Str("clientID", clientID).Msgf("client is not found")
 			return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
 		}
-		log.Error(ctx).Err(err).Str("clientID", clientID).Msgf("failed to fetch client")
+		log.Ctx(ctx).Error().Err(err).Str("clientID", clientID).Msgf("failed to fetch client")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to fetch client"))
 	}
 
 	grantType, err := internal.NewGrantType(req.Msg.GrantType)
 	if err != nil {
-		log.Info(ctx).Err(err).Str("grantType", req.Msg.GrantType).Msgf("invalid grant type")
+		log.Ctx(ctx).Info().Err(err).Str("grantType", req.Msg.GrantType).Msgf("invalid grant type")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 	// When authorization code grant, value MUST be set to "authorization_code".
 	if grantType != internal.GrantTypeAuthorizationCode {
-		log.Info(ctx).Str("grantType", string(grantType)).Msgf("grant type should be authorization code")
+		log.Ctx(ctx).Info().Str("grantType", string(grantType)).Msgf("grant type should be authorization code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrUnsupportedGrantType)
 	}
 
 	// TODO: エンドポイントURIはフラグメントコンポーネントを含んではいけない (MUST NOT).
 	redirectURI, err := url.Parse(req.Msg.RedirectUri)
 	if err != nil {
-		log.Info(ctx).Err(err).Str("redirectURI", req.Msg.RedirectUri).Msgf("redirectURI is invalid")
+		log.Ctx(ctx).Info().Err(err).Str("redirectURI", req.Msg.RedirectUri).Msgf("redirectURI is invalid")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 
@@ -166,15 +164,15 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 	// "redirect_uri" parameter was included in the initial authorization request
 	code, err := s.codeDatastore.Fetch(req.Msg.Code, clientID, *redirectURI)
 	if err != nil {
-		log.Info(ctx).Err(err).Str("code", req.Msg.Code).Msgf("code which is satisfied requirements not found")
+		log.Ctx(ctx).Info().Err(err).Str("code", req.Msg.Code).Msgf("code which is satisfied requirements not found")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
 	}
 	if code.Expired() {
-		log.Info(ctx).Msgf("code is expired")
+		log.Ctx(ctx).Info().Msgf("code is expired")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
 	}
 	if _, err = code.Use(); err != nil {
-		log.Error(ctx).Err(err).Msgf("failed to use code")
+		log.Ctx(ctx).Error().Err(err).Msgf("failed to use code")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidGrant)
 	}
 	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
@@ -182,7 +180,7 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 	// TODO: pass correct sub and scopes
 	accessToken, err := internal.NewAccessToken("dummy_sub", client, []internal.Scope{internal.ScopeOpenId})
 	if err != nil {
-		log.Error(ctx).Err(err).Msgf("failed to initiate access token")
+		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate access token")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))
 	}
 

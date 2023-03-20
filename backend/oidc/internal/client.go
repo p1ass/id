@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/p1ass/id/backend/pkg/log"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -51,7 +51,7 @@ func (c *Client) Authenticate(ctx context.Context, header http.Header) (*Authent
 	}
 	basicClientID, basicClientSecret, ok := req.BasicAuth()
 	if !ok {
-		log.Info(ctx).Msg("not valid basic auth")
+		log.Ctx(ctx).Info().Msg("not valid basic auth")
 		return nil, ErrNotAuthenticatedClient
 	}
 
@@ -64,12 +64,12 @@ func (c *Client) Authenticate(ctx context.Context, header http.Header) (*Authent
 	expectedClientIDHash := sha256.Sum256([]byte(c.ID))
 	clientIDMatched := subtle.ConstantTimeCompare(basicClientIDHash[:], expectedClientIDHash[:]) == 1
 	if !clientIDMatched {
-		log.Info(ctx).Msg("not authenticated client id")
+		log.Ctx(ctx).Info().Msg("not authenticated client id")
 		return nil, ErrNotAuthenticatedClient
 	}
 
 	if err := c.secret.ComparePassword(RawPassword(basicClientSecret)); err != nil {
-		log.Info(ctx).Msg("not authenticated password")
+		log.Ctx(ctx).Info().Msg("not authenticated password")
 		return nil, ErrNotAuthenticatedClient
 	}
 
