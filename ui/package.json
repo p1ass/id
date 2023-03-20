@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@bufbuild/connect": "^0.8.3",
-    "@bufbuild/connect-node": "^0.8.3",
+    "@bufbuild/connect-node": "^0.8.4",
     "@bufbuild/protobuf": "^1.1.1",
     "@next/font": "13.2.4",
     "@types/node": "18.11.18",
