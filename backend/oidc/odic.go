@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type OIDCServer struct {
+type Server struct {
 	clientDatastore internal.ClientDatastore
 	codeDatastore   internal.CodeDatastore
 }
@@ -46,9 +46,12 @@ var (
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	clientDatastore := internal.NewInMemoryClientDatastore()
-	redirectUri, err := url.Parse("https://localhost:8443/test/a/local/callback")
+	redirectURI, err := url.Parse("https://localhost:8443/test/a/local/callback")
+	if err != nil {
+		panic(err)
+	}
 	client, err := internal.NewClient("dummy_client_id", internal.NewHashedPassword("dummy_password"), []url.URL{
-		*redirectUri,
+		*redirectURI,
 	})
 	if err != nil {
 		panic(err)
@@ -57,13 +60,13 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	if err != nil {
 		panic(err)
 	}
-	return &OIDCServer{
+	return &Server{
 		clientDatastore: clientDatastore,
 		codeDatastore:   internal.NewInMemoryCodeDatastore(),
 	}
 }
 
-func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
+func (s *Server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
 		if errors.Is(err, internal.ErrClientNotFound) {
@@ -86,7 +89,7 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRequest)
 	}
 
-	if !scopes.ContainsOpenId() {
+	if !scopes.ContainsOpenID() {
 		log.Ctx(ctx).Info().Msg("scopes does not contain openid scope")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidScope)
 	}
@@ -126,7 +129,7 @@ func (s *OIDCServer) Authenticate(ctx context.Context, req *connect.Request[oidc
 	}), nil
 }
 
-func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
 	// TODO: If the client type is confidential or the client was issued client
 	//   credentials (or assigned other authentication requirements), the
 	//   client MUST authenticate with the authorization server as described
@@ -178,7 +181,7 @@ func (s *OIDCServer) Exchange(ctx context.Context, req *connect.Request[oidcv1.E
 	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
 
 	// TODO: pass correct sub and scopes
-	accessToken, err := internal.NewAccessToken("dummy_sub", client, []internal.Scope{internal.ScopeOpenId})
+	accessToken, err := internal.NewAccessToken("dummy_sub", client, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate access token")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))

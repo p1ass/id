@@ -1,18 +1,31 @@
 linters:
-  # Disable all linters.
-  # Default: false
-  disable-all: true
-  # Enable specific linter
-  # https://golangci-lint.run/usage/linters/#enabled-by-default
-  enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-    - bodyclose
-    - exhaustive
-    - gocognit
-    - goimports
-    - gosec
+  enable-all: true
+  disable:
+    - ireturn # Sometimes it returns interface
+    - varnamelen # We don't cara name length
+    - gochecknoglobals # use var map to convert iota to string
+    - goerr113 # We use dynamic error
+    - exhaustivestruct # We want to ignore like &http2.Server{}
+    - exhaustruct # duplicate with exhaustivestruct
+    - wsl # white spacedo not create bugs.
+    - nlreturn # white spacedo not create bugs.
+    - godox # We want to commit TODO
+    - dupl # Sometimes lines are duplicate
+    - lll # Style
+    - tparallel # duplicate with paralleltest
+    - cyclop # duplicate which gocyclo
+    - varcheck # deprecated
+    - maligned # deprecated
+    - nosnakecase # deprecated
+    - interfacer # deprecated
+    - structcheck # deprecated
+    - golint # deprecated
+    - scopelint # deprecated
+    - deadcode # deprecated
+    - ifshort # deprecated
+    - structcheck # deprecated
+linters-settings:
+  funlen:
+    lines: 120
+  paralleltest:
+    ignore-missing: true

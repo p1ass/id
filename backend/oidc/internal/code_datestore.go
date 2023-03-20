@@ -31,12 +31,14 @@ func (d *inMemoryCodeDatastore) Fetch(code, clientID string, redirectURI url.URL
 	if !ok {
 		return nil, ErrCodeNotFound
 	}
-	gotCode := value.(*AuthorizationCode)
+	gotCode, ok := value.(*AuthorizationCode)
+	if !ok {
+		panic("type assertion error")
+	}
 	if gotCode.Expired() {
 		return nil, ErrCodeIsExpired
 	}
 	return gotCode, nil
-
 }
 
 func (d *inMemoryCodeDatastore) Save(code *AuthorizationCode) error {
@@ -44,7 +46,7 @@ func (d *inMemoryCodeDatastore) Save(code *AuthorizationCode) error {
 	return nil
 }
 
-// key for only in-memory datastore
+// key for only in-memory datastore.
 func (d *inMemoryCodeDatastore) key(code, clientID string, redirectURI url.URL) string {
 	return fmt.Sprintf("%s-%s-%s", clientID, code, redirectURI.String())
 }

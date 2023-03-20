@@ -22,8 +22,7 @@ type AuthorizationCode struct {
 	expiry      time.Time
 }
 
-type UsedAuthorizationCode struct {
-}
+type UsedAuthorizationCode struct{}
 
 const (
 	authorizationCodeByteLength = 32
@@ -33,12 +32,9 @@ const (
 	authorizationCodeExpiration = 30 * time.Second
 )
 
-var (
-	ErrCodeIsExpired = errors.New("code is expired")
-)
+var ErrCodeIsExpired = errors.New("code is expired")
 
 func NewAuthorizationCode(client *Client, redirectURI url.URL) *AuthorizationCode {
-
 	now := flextime.Now().UTC()
 	return &AuthorizationCode{
 		Code:        randgenerator.MustGenerateToString(authorizationCodeByteLength),
@@ -54,7 +50,7 @@ func (c *AuthorizationCode) Expired() bool {
 	return now.After(c.expiry)
 }
 
-// TODO: implement
+// TODO: implement.
 func (c *AuthorizationCode) Use() (*UsedAuthorizationCode, error) {
 	if c.Expired() {
 		return nil, ErrCodeIsExpired

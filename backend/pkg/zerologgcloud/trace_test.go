@@ -1,4 +1,4 @@
-package zerologgcloud
+package zerologgcloud_test
 
 import (
 	"bytes"
@@ -6,20 +6,18 @@ import (
 	"encoding/json"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/google/go-cmp/cmp"
-
+	"github.com/p1ass/id/backend/pkg/zerologgcloud"
 	"github.com/rs/zerolog"
-
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func TestWithCloudLoggingSpanContext(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		ctx       context.Context
+		ctx       context.Context //nolint:containedctx
 		projectID string
 	}
 	tests := []struct {
@@ -59,7 +57,7 @@ func TestWithCloudLoggingSpanContext(t *testing.T) {
 			out := &bytes.Buffer{}
 			log.Logger = zerolog.New(out)
 
-			ctx := WithCloudLoggingSpanContext(tt.args.ctx, tt.args.projectID)
+			ctx := zerologgcloud.WithCloudLoggingSpanContext(tt.args.ctx, tt.args.projectID)
 			log.Ctx(ctx).Info().Msg("test-message")
 
 			var got map[string]any

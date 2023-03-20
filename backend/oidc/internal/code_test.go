@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/Songmu/flextime"
-
 	"github.com/p1ass/id/backend/oidc/internal"
 )
 
 func TestNewAuthorizationCode_NewAuthorizationCode_GenerateDifferentCode(t *testing.T) {
 	t.Parallel()
-	client, err := internal.NewClient("clientID", internal.NewHashedPassword("verySecurePassword"), []url.URL{mustURLParse("https://web.test/callback")})
+	client, err := internal.NewClient("clientID",
+		internal.NewHashedPassword("verySecurePassword"),
+		[]url.URL{mustURLParse("https://web.test/callback")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +50,9 @@ func TestAuthorizationCode_Expired(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			client, err := internal.NewClient("clientID", internal.NewHashedPassword("verySecurePassword"), []url.URL{mustURLParse("https://web.test/callback")})
+			client, err := internal.NewClient("clientID",
+				internal.NewHashedPassword("verySecurePassword"),
+				[]url.URL{mustURLParse("https://web.test/callback")})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/rs/zerolog/hlog"
+	"github.com/rs/zerolog/log"
 )
 
 func NewRequestLoggingHandler() func(http.Handler) http.Handler {

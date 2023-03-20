@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	cloudtracepropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
 	"github.com/bufbuild/connect-go"
@@ -71,11 +72,14 @@ func main() {
 
 	log.Info().Msg("Starting server...")
 
-	err := http.ListenAndServe(
-		fmt.Sprintf("0.0.0.0:%s", port),
-		// Use h2c, so we can serve HTTP/2 without TLS.
-		c.Then(h2c.NewHandler(mux, &http2.Server{})),
-	)
+	const timeout = 10 * time.Second
+	s := &http.Server{
+		Addr:         fmt.Sprintf("0.0.0.0:%s", port),
+		Handler:      c.Then(h2c.NewHandler(mux, &http2.Server{})),
+		ReadTimeout:  timeout,
+		WriteTimeout: timeout,
+	}
+	err := s.ListenAndServe()
 	if err != nil {
 		log.Info().Err(err)
 	}

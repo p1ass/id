@@ -3,7 +3,7 @@ package internal
 import "fmt"
 
 type (
-	// GrantType represents OAuth 2.0 grant_type
+	// GrantType represents OAuth 2.0 grant_type.
 	GrantType string
 )
 

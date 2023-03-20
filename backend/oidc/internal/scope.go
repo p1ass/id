@@ -18,12 +18,12 @@ type (
 
 const (
 	ScopeUnknown Scope = "unknown"
-	ScopeOpenId  Scope = "openid"
+	ScopeOpenID  Scope = "openid"
 	ScopeEmail   Scope = "email"
 )
 
 var scopeMap = map[string]Scope{
-	string(ScopeOpenId): ScopeOpenId,
+	string(ScopeOpenID): ScopeOpenID,
 	string(ScopeEmail):  ScopeEmail,
 }
 
@@ -42,20 +42,21 @@ func NewScopes(strs []string) (Scopes, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		scopes = append(scopes, s)
 	}
 	return scopes, nil
 }
 
-// ContainsOpenId checks if scopes contains openid scope.
+// ContainsOpenID checks if scopes contains openid scope.
 // OpenID Connect requests MUST contain the openid scope value.
 // (If no openid scope value is present, the request may still be a valid OAuth 2.0 request,
 // but is not an OpenID Connect request.)
 //
 // [OpenID Connect 1.0 Core Section 3.1.2.1.]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-func (scopes Scopes) ContainsOpenId() bool {
+func (scopes Scopes) ContainsOpenID() bool {
 	for _, s := range scopes {
-		if s == ScopeOpenId {
+		if s == ScopeOpenID {
 			return true
 		}
 	}

@@ -35,16 +35,16 @@ type AuthenticatedClient struct {
 	*Client
 }
 
-func NewClient(ID string, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
+func NewClient(id string, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
 	c := &Client{
-		ID:           ID,
+		ID:           id,
 		secret:       hashedPassword,
 		redirectURIs: redirectURIs,
 	}
 	return c, nil
 }
 
-// Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient
+// Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient.
 func (c *Client) Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error) {
 	req := &http.Request{
 		Header: header,
