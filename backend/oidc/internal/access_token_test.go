@@ -48,7 +48,7 @@ func TestNewAccessToken_TokenShouldNotBeEmpty(t *testing.T) {
 	}
 }
 
-func TestAccessToken_ExpiresInSec(t *testing.T) { //nolint:tparallel
+func TestAccessToken_ExpiresInSec(t *testing.T) {
 	t.Parallel()
 
 	createdTime := flextime.Now().UTC()

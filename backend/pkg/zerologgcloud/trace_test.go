@@ -13,7 +13,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func TestWithCloudLoggingSpanContext(t *testing.T) { //nolint:tparallel
+func TestWithCloudLoggingSpanContext(t *testing.T) {
 	t.Parallel()
 
 	type args struct {

@@ -16,5 +16,5 @@ jobs:
         with:
           # Can pass --config flag to change golangci-lint behavior and target
           # directory.
-          golangci_lint_flags: "--config=backend/.golangci.yml"
+          # golangci_lint_flags: "--config=.golangci.yml"
           workdir: backend/
