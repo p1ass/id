@@ -18,7 +18,6 @@ func WithCloudLoggingSpanContext(ctx context.Context, projectID string) context.
 		return log.Logger.WithContext(ctx)
 	}
 
-	// TODO: 決め打ちをやめる
 	traceID := fmt.Sprintf("projects/%s/traces/%s", projectID, spanContext.TraceID().String())
 	spanID := spanContext.SpanID().String()
 	return log.With().
