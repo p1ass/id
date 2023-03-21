@@ -46,19 +46,13 @@ var (
 
 func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 	clientDatastore := internal.NewInMemoryClientDatastore()
-	redirectURI, err := url.Parse("https://localhost:8443/test/a/local/callback")
-	if err != nil {
-		panic(err)
-	}
-	client, err := internal.NewClient("dummy_client_id", internal.NewHashedPassword("dummy_password"), []url.URL{
-		*redirectURI,
-	})
-	if err != nil {
-		panic(err)
-	}
-	err = clientDatastore.SaveClient(client)
-	if err != nil {
-		panic(err)
+
+	clients := internal.NewClientFixture()
+	for _, client := range clients {
+		err := clientDatastore.SaveClient(client)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return &Server{
 		clientDatastore: clientDatastore,
