@@ -10,6 +10,7 @@ require (
 	github.com/bufbuild/connect-opentelemetry-go v0.1.0
 	github.com/google/go-cmp v0.5.9
 	github.com/justinas/alice v1.2.0
+	github.com/lestrrat-go/jwx/v2 v2.0.9
 	github.com/rs/cors v1.8.3
 	github.com/rs/zerolog v1.29.0
 	go.opentelemetry.io/otel v1.14.0
@@ -22,8 +23,15 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.18.0 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/lestrrat-go/blackmagic v1.0.1 // indirect
+	github.com/lestrrat-go/httpcc v1.0.1 // indirect
+	github.com/lestrrat-go/httprc v1.0.4 // indirect
+	github.com/lestrrat-go/iter v1.0.2 // indirect
+	github.com/lestrrat-go/option v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/rs/xid v1.4.0 // indirect
