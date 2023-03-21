@@ -40,3 +40,12 @@ resource "google_cloud_run_domain_mapping" "default" {
     route_name = google_cloud_run_v2_service.backend.name
   }
 }
+
+resource "google_cloud_run_service_iam_binding" "backend" {
+  location = google_cloud_run_v2_service.backend.location
+  service  = google_cloud_run_v2_service.backend.name
+  role     = "roles/run.invoker"
+  members = [
+    "allUsers"
+  ]
+}
