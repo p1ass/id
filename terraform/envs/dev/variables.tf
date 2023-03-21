@@ -11,4 +11,5 @@ variable "container_images_repository_id" {
 locals {
   env      = "dev"
   location = "asia-northeast1"
+  domain   = "api.dev.id.p1ass.com"
 }

@@ -27,3 +27,16 @@ resource "google_cloud_run_v2_service" "backend" {
 
   depends_on = []
 }
+
+resource "google_cloud_run_domain_mapping" "default" {
+  location = local.location
+  name     = local.domain
+
+  metadata {
+    namespace = var.google_cloud_project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_v2_service.backend.name
+  }
+}
