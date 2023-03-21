@@ -181,7 +181,8 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 	// TODO: Verify that the Authorization Code used was issued in response to an OpenID Connect Authentication Request (so that an ID Token will be returned from the Token Endpoint).
 
 	// TODO: pass correct sub and scopes
-	accessToken, err := internal.NewAccessToken("dummy_sub", client, []internal.Scope{internal.ScopeOpenID})
+	const sub = "dummy_sub"
+	accessToken, err := internal.NewAccessToken(sub, client, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate access token")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))
@@ -189,12 +190,17 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 
 	// TODO: save access token
 
+	idToken, err := internal.NewSignedIDToken(sub, clientID)
+	if err != nil {
+		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate id token")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate id token"))
+	}
+
 	res := connect.NewResponse[oidcv1.ExchangeResponse](&oidcv1.ExchangeResponse{
 		AccessToken: accessToken.Token,
-		// TODO: implement
-		IdToken:   "",
-		TokenType: string(accessToken.TokenType),
-		ExpiresIn: accessToken.ExpiresInSec(),
+		IdToken:     idToken.Token(),
+		TokenType:   string(accessToken.TokenType),
+		ExpiresIn:   accessToken.ExpiresInSec(),
 		// TODO: implement
 		RefreshToken: nil,
 	})
