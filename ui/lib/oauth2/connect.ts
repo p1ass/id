@@ -7,7 +7,7 @@ import { PlainMessage } from '@bufbuild/protobuf'
 import { OIDCPrivateService } from '../../generated/oidc/v1/oidc_connect'
 import { AuthenticateRequest, AuthenticateResponse } from '../../generated/oidc/v1/oidc_pb'
 
-const baseUri = 'http://local.p1ass.com:8080'
+const baseUri = process.env.API_BASE_URL ?? 'http://local.p1ass.com:8080'
 
 const transport = createConnectTransport({
   httpVersion: '1.1',
