@@ -24,8 +24,6 @@ resource "google_cloud_run_v2_service" "backend" {
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
     percent = 100
   }
-
-  depends_on = []
 }
 
 resource "google_cloud_run_domain_mapping" "default" {
@@ -41,11 +39,16 @@ resource "google_cloud_run_domain_mapping" "default" {
   }
 }
 
-resource "google_cloud_run_service_iam_binding" "backend" {
+resource "google_service_account" "vercel" {
+  account_id   = "${local.env}-vercel-service-account"
+  display_name = "${local.env} Service Account for Vercel"
+}
+
+resource "google_cloud_run_v2_service_iam_binding" "backend" {
   location = google_cloud_run_v2_service.backend.location
-  service  = google_cloud_run_v2_service.backend.name
+  name  = google_cloud_run_v2_service.backend.name
   role     = "roles/run.invoker"
   members = [
-    "allUsers"
+    google_service_account.vercel.member
   ]
 }
