@@ -39,6 +39,13 @@ export const OIDCPrivateService = {
     /**
      * Exchange exchanges authorization code into access token and ID Token
      * Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+     * Possible error code (defined by OAuth2.0 or OpenID Connect):
+     * - InvalidArgument: "invalid_request"
+     * - InvalidArgument: "unsupported_grant_type"
+     * - InvalidArgument: "invalid_grant"
+     * - Unauthenticated: "invalid_client"
+     * Possible error code (defined by Self):
+     * - InvalidArgument: "invalid_redirect_uri"
      *
      * @generated from rpc oidc.v1.OIDCPrivateService.Exchange
      */
