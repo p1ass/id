@@ -23,17 +23,16 @@ func NewServiceHandler(cfg *config.Config) (string, http.Handler) {
 			panic(err)
 		}
 	}
-	srv := &server{
+	svc := &service{
 		clientDatastore:      clientDatastore,
 		codeDatastore:        internal.NewInMemoryCodeDatastore(),
 		accessTokenDatastore: internal.NewInMemoryAccessTokenDatastore(),
 	}
 
-	return oidcv1connect.NewOIDCPrivateServiceHandler(srv,
+	return oidcv1connect.NewOIDCPrivateServiceHandler(svc,
 		connect.WithInterceptors(
 			otelconnect.NewInterceptor(otelconnect.WithTrustRemote()),
 			zerologgcloud.NewCloudLoggingTraceContextInterceptor(cfg.GoogleCloudProjectID),
-			internal.NewClientAuthenticationInterceptor(internal.NewBasicClientAuthenticator(clientDatastore)),
 		),
 	)
 }

@@ -273,34 +273,3 @@ func TestBasicClientAuthenticator_Authenticate_Datastore(t *testing.T) {
 		})
 	}
 }
-
-func TestContextWithAuthenticatedClient(t *testing.T) {
-	cli, err := internal.NewClient("clientID1", internal.ClientTypeConfidential, internal.NewHashedPassword("rawPassword"), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	authenticatedClient := &internal.AuthenticatedClient{Client: cli}
-
-	ctx := internal.ContextWithAuthenticatedClient(context.Background(), authenticatedClient)
-	extractedClient := internal.AuthenticatedClientFromContext(ctx)
-	if authenticatedClient != extractedClient {
-		t.Errorf("Not the same span returned from context, expected=%+v, actual=%+v", authenticatedClient, extractedClient)
-	}
-
-	ctx = context.Background()
-	extractedClient = internal.AuthenticatedClientFromContext(ctx)
-	if extractedClient != nil {
-		t.Errorf("Expected nil span, found %+v", extractedClient)
-	}
-
-	ctx = internal.ContextWithAuthenticatedClient(context.Background(), authenticatedClient)
-	extractedClient = internal.AuthenticatedClientFromContext(ctx)
-	if authenticatedClient != extractedClient {
-		t.Errorf("Not the same span returned from context, expected=%+v, actual=%+v", authenticatedClient, extractedClient)
-	}
-
-	ctx = internal.ContextWithAuthenticatedClient(context.Background(), nil)
-	if c := internal.AuthenticatedClientFromContext(ctx); c != nil {
-		t.Errorf("Not able to reset span in context, expected=nil, actual=%+v", c)
-	}
-}

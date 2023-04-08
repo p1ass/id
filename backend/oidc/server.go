@@ -11,8 +11,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type server struct {
+type service struct {
 	clientDatastore      internal.ClientDatastore
+	clientAuthenticator  internal.ClientAuthenticator
 	codeDatastore        internal.CodeDatastore
 	accessTokenDatastore internal.AccessTokenDatastore
 }
@@ -44,7 +45,7 @@ var (
 	ErrInvalidRedirectURI = errors.New("invalid_redirect_uri")
 )
 
-func (s *server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
+func (s *service) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
 		if errors.Is(err, internal.ErrClientNotFound) {
@@ -107,12 +108,10 @@ func (s *server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.A
 	}), nil
 }
 
-func (s *server) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
-	authenticatedClient := internal.AuthenticatedClientFromContext(ctx)
-
-	if authenticatedClient == nil {
-		log.Ctx(ctx).Info().Msgf("ctx does not have authenticated client")
-
+func (s *service) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+	authenticatedClient, err := s.clientAuthenticator.Authenticate(ctx, req.Header())
+	if err != nil {
+		log.Ctx(ctx).Info().Err(err).Msgf("failed to authenticate client")
 		connectErr := connect.NewError(connect.CodeUnauthenticated, ErrInvalidClient)
 		connectErr.Meta().Set("WWW-Authenticate", "Basic")
 		return nil, connectErr
