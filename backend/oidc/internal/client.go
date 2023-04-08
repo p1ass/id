@@ -1,20 +1,14 @@
 package internal
 
 import (
-	"context"
-	"crypto/sha256"
-	"crypto/subtle"
 	"errors"
-	"net/http"
 	"net/url"
-
-	"github.com/rs/zerolog/log"
 )
 
 var (
-	ErrNotIdenticalRedirectURI      = errors.New("not identical redirect uri")
-	ErrNotAuthenticatedClient       = errors.New("not authenticated client")
-	ErrClientCredentialIsNotAllowed = errors.New("client credential is not allowed")
+	ErrNotIdenticalRedirectURI    = errors.New("not identical redirect uri")
+	ErrClientNotAuthenticated     = errors.New("client not authenticated")
+	ErrClientCredentialNotAllowed = errors.New("client credential not allowed")
 )
 
 type ClientType string
@@ -55,43 +49,6 @@ func NewClient(id string, clientType ClientType, hashedPassword *HashedPassword,
 		redirectURIs: redirectURIs,
 	}
 	return c, nil
-}
-
-// Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient.
-// if ClientType is not ClientTypeConfidential, return ErrClientCredentialIsNotAllowed error.
-func (c *Client) Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error) {
-	if c.Type != ClientTypeConfidential {
-		return nil, ErrClientCredentialIsNotAllowed
-	}
-
-	req := &http.Request{
-		Header: header,
-	}
-	basicClientID, basicClientSecret, ok := req.BasicAuth()
-	if !ok {
-		log.Ctx(ctx).Info().Msg("not valid basic auth")
-		return nil, ErrNotAuthenticatedClient
-	}
-
-	// ref: https://www.alexedwards.net/blog/basic-authentication-in-go
-	// Use the subtle.ConstantTimeCompare() function to check if
-	// the provided basicClientID hash equal the
-	// expected basicClientID hash. ConstantTimeCompare
-	// will return 1 if the values are equal, or 0 otherwise.
-	basicClientIDHash := sha256.Sum256([]byte(basicClientID))
-	expectedClientIDHash := sha256.Sum256([]byte(c.ID))
-	clientIDMatched := subtle.ConstantTimeCompare(basicClientIDHash[:], expectedClientIDHash[:]) == 1
-	if !clientIDMatched {
-		log.Ctx(ctx).Info().Msg("not authenticated client id")
-		return nil, ErrNotAuthenticatedClient
-	}
-
-	if err := c.secret.ComparePassword(RawPassword(basicClientSecret)); err != nil {
-		log.Ctx(ctx).Info().Msg("not authenticated password")
-		return nil, ErrNotAuthenticatedClient
-	}
-
-	return &AuthenticatedClient{c}, nil
 }
 
 func (c *Client) IdenticalRedirectURI(redirectURI url.URL) error {
