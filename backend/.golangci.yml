@@ -27,5 +27,6 @@ linters:
 linters-settings:
   funlen:
     lines: 120
+    statements: 50
   paralleltest:
     ignore-missing: true

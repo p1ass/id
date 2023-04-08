@@ -34,7 +34,7 @@ const (
 }`
 )
 
-func NewSignedIDToken(sub string, clientID string) (*SignedIDToken, error) {
+func NewSignedIDToken(sub string, client *AuthenticatedClient) (*SignedIDToken, error) {
 	// iat resolution is seconds
 	now := flextime.Now().UTC().Truncate(time.Second)
 
@@ -42,7 +42,7 @@ func NewSignedIDToken(sub string, clientID string) (*SignedIDToken, error) {
 		// TODO: 固定値をやめる
 		Issuer("https://api.dev.id.p1ass.com").
 		Subject(sub).
-		Audience([]string{clientID}).
+		Audience([]string{client.ID}).
 		IssuedAt(now).
 		Expiration(now.Add(idTokenExpiration)).
 		// Claim("auth_time","TODO").

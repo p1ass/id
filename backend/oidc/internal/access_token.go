@@ -41,7 +41,7 @@ const (
 	AccessTokenTypeBearer  AccessTokenType = "Bearer"
 )
 
-func NewAccessToken(sub string, aud *Client, scopes Scopes) (*AccessToken, error) {
+func NewAccessToken(sub string, aud *AuthenticatedClient, scopes Scopes) (*AccessToken, error) {
 	token := make([]byte, accessTokenByteLength)
 	_, err := io.ReadFull(rand.Reader, token)
 	if err != nil {

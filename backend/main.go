@@ -8,10 +8,7 @@ import (
 	"time"
 
 	cloudtracepropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
-	"github.com/bufbuild/connect-go"
-	otelconnect "github.com/bufbuild/connect-opentelemetry-go"
 	"github.com/justinas/alice"
-	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
 	"github.com/p1ass/id/backend/oidc"
 	"github.com/p1ass/id/backend/pkg/config"
 	"github.com/p1ass/id/backend/pkg/zerologgcloud"
@@ -62,13 +59,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	server := oidc.NewOIDCServer()
-	path, handler := oidcv1connect.NewOIDCPrivateServiceHandler(server,
-		connect.WithInterceptors(
-			otelconnect.NewInterceptor(otelconnect.WithTrustRemote()),
-			zerologgcloud.NewCloudLoggingTraceContextInterceptor(cfg.GoogleCloudProjectID)),
-	)
-	mux.Handle(path, handler)
+	mux.Handle(oidc.NewServiceHandler(cfg))
 
 	log.Info().Msg("Starting server...")
 

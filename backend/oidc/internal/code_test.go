@@ -12,6 +12,7 @@ import (
 func TestNewAuthorizationCode_NewAuthorizationCode_GenerateDifferentCode(t *testing.T) {
 	t.Parallel()
 	client, err := internal.NewClient("clientID",
+		internal.ClientTypeConfidential,
 		internal.NewHashedPassword("verySecurePassword"),
 		[]url.URL{mustURLParse("https://web.test/callback")})
 	if err != nil {
@@ -51,15 +52,16 @@ func TestAuthorizationCode_Expired(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			client, err := internal.NewClient("clientID",
+				internal.ClientTypeConfidential,
 				internal.NewHashedPassword("verySecurePassword"),
 				[]url.URL{mustURLParse("https://web.test/callback")})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			flextime.Fix(issued)
+			defer flextime.Fix(issued)()
 			c := internal.NewAuthorizationCode(client, mustURLParse("https://web.test/callback"))
-			flextime.Fix(tt.now)
+			defer flextime.Fix(tt.now)()
 
 			if got := c.Expired(); got != tt.want {
 				t.Errorf("Expired() = %v, want %v", got, tt.want)

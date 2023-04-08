@@ -7,11 +7,10 @@ package oidcv1connect
 import (
 	context "context"
 	errors "errors"
-	http "net/http"
-	strings "strings"
-
 	connect_go "github.com/bufbuild/connect-go"
 	v1 "github.com/p1ass/id/backend/generated/oidc/v1"
+	http "net/http"
+	strings "strings"
 )
 
 // This is a compile-time assertion to ensure that this generated file and the connect package are
@@ -42,6 +41,13 @@ type OIDCPrivateServiceClient interface {
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+	// Possible error code (defined by OAuth2.0 or OpenID Connect):
+	// - InvalidArgument: "invalid_request"
+	// - InvalidArgument: "unsupported_grant_type"
+	// - InvalidArgument: "invalid_grant"
+	// - Unauthenticated: "invalid_client"
+	// Possible error code (defined by Self):
+	// - InvalidArgument: "invalid_redirect_uri"
 	Exchange(context.Context, *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error)
 }
 
@@ -100,6 +106,13 @@ type OIDCPrivateServiceHandler interface {
 	Authenticate(context.Context, *connect_go.Request[v1.AuthenticateRequest]) (*connect_go.Response[v1.AuthenticateResponse], error)
 	// Exchange exchanges authorization code into access token and ID Token
 	// Spec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)
+	// Possible error code (defined by OAuth2.0 or OpenID Connect):
+	// - InvalidArgument: "invalid_request"
+	// - InvalidArgument: "unsupported_grant_type"
+	// - InvalidArgument: "invalid_grant"
+	// - Unauthenticated: "invalid_client"
+	// Possible error code (defined by Self):
+	// - InvalidArgument: "invalid_redirect_uri"
 	Exchange(context.Context, *connect_go.Request[v1.ExchangeRequest]) (*connect_go.Response[v1.ExchangeResponse], error)
 }
 
