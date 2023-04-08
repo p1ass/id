@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/compute/metadata v0.2.3
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.36.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.37.0
 	github.com/Songmu/flextime v0.1.0
 	github.com/bufbuild/connect-go v1.6.0
 	github.com/bufbuild/connect-opentelemetry-go v0.1.0
