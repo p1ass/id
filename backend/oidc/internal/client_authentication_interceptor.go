@@ -1,10 +1,9 @@
-package oidc
+package internal
 
 import (
 	"context"
 
 	"github.com/bufbuild/connect-go"
-	"github.com/p1ass/id/backend/oidc/internal"
 	"github.com/rs/zerolog/log"
 )
 
@@ -12,7 +11,7 @@ import (
 // embeds AuthenticatedClient into context.
 // Even if authentication fails, proceeds next function, not returns error.
 // This behavior aims to be able to handle the error in rpc methods.
-func NewClientAuthenticationInterceptor(authenticator internal.ClientAuthenticator) connect.UnaryInterceptorFunc {
+func NewClientAuthenticationInterceptor(authenticator ClientAuthenticator) connect.UnaryInterceptorFunc {
 	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(
 			ctx context.Context,
@@ -29,7 +28,7 @@ func NewClientAuthenticationInterceptor(authenticator internal.ClientAuthenticat
 				return next(ctx, req)
 			}
 
-			newCtx := internal.ContextWithAuthenticatedClient(ctx, authenticatedClient)
+			newCtx := ContextWithAuthenticatedClient(ctx, authenticatedClient)
 
 			return next(newCtx, req)
 		}

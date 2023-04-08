@@ -7,12 +7,11 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	oidcv1 "github.com/p1ass/id/backend/generated/oidc/v1"
-	"github.com/p1ass/id/backend/generated/oidc/v1/oidcv1connect"
 	"github.com/p1ass/id/backend/oidc/internal"
 	"github.com/rs/zerolog/log"
 )
 
-type Server struct {
+type server struct {
 	clientDatastore      internal.ClientDatastore
 	codeDatastore        internal.CodeDatastore
 	accessTokenDatastore internal.AccessTokenDatastore
@@ -45,24 +44,7 @@ var (
 	ErrInvalidRedirectURI = errors.New("invalid_redirect_uri")
 )
 
-func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
-	clientDatastore := internal.NewInMemoryClientDatastore()
-
-	clients := internal.NewClientFixture()
-	for _, client := range clients {
-		err := clientDatastore.SaveClient(client)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return &Server{
-		clientDatastore:      clientDatastore,
-		codeDatastore:        internal.NewInMemoryCodeDatastore(),
-		accessTokenDatastore: internal.NewInMemoryAccessTokenDatastore(),
-	}
-}
-
-func (s *Server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
+func (s *server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.AuthenticateRequest]) (*connect.Response[oidcv1.AuthenticateResponse], error) {
 	client, err := s.clientDatastore.FetchClient(req.Msg.ClientId)
 	if err != nil {
 		if errors.Is(err, internal.ErrClientNotFound) {
@@ -125,7 +107,7 @@ func (s *Server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.A
 	}), nil
 }
 
-func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
+func (s *server) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
 	authenticatedClient := internal.AuthenticatedClientFromContext(ctx)
 
 	if authenticatedClient == nil {
