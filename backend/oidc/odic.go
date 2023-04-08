@@ -13,8 +13,9 @@ import (
 )
 
 type Server struct {
-	clientDatastore internal.ClientDatastore
-	codeDatastore   internal.CodeDatastore
+	clientDatastore      internal.ClientDatastore
+	codeDatastore        internal.CodeDatastore
+	accessTokenDatastore internal.AccessTokenDatastore
 }
 
 // OAuth 2.0 Authorization Error Responses defined by RFC6749 or OIDC Authentication Error Responses.
@@ -55,8 +56,9 @@ func NewOIDCServer() oidcv1connect.OIDCPrivateServiceHandler {
 		}
 	}
 	return &Server{
-		clientDatastore: clientDatastore,
-		codeDatastore:   internal.NewInMemoryCodeDatastore(),
+		clientDatastore:      clientDatastore,
+		codeDatastore:        internal.NewInMemoryCodeDatastore(),
+		accessTokenDatastore: internal.NewInMemoryAccessTokenDatastore(),
 	}
 }
 
@@ -182,7 +184,10 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))
 	}
 
-	// TODO: save access token
+	if err := s.accessTokenDatastore.Save(accessToken); err != nil {
+		log.Ctx(ctx).Error().Err(err).Msgf("failed to save access token")
+		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to store access token"))
+	}
 
 	idToken, err := internal.NewSignedIDToken(sub, clientID)
 	if err != nil {
