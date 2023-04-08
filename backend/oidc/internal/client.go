@@ -12,14 +12,26 @@ import (
 )
 
 var (
-	ErrNotIdenticalRedirectURI = errors.New("not identical redirect uri")
-	ErrNotAuthenticatedClient  = errors.New("not authenticated client")
+	ErrNotIdenticalRedirectURI      = errors.New("not identical redirect uri")
+	ErrNotAuthenticatedClient       = errors.New("not authenticated client")
+	ErrClientCredentialIsNotAllowed = errors.New("client credential is not allowed")
+)
+
+type ClientType string
+
+const (
+	ClientTypeUnknown      ClientType = "unknown"
+	ClientTypeConfidential ClientType = "confidential"
+	ClientTypePublic       ClientType = "public"
 )
 
 // Client represents OAuth 2.0 client.
 type Client struct {
 	// ID is a unique string  and is exposed to public.
 	ID string
+
+	Type ClientType
+
 	// secret is used for HTTP Basic Authentication Scheme [RFC2617].
 	// [RFC2617]: https://www.rfc-editor.org/rfc/rfc2617.html
 	secret *HashedPassword
@@ -35,9 +47,10 @@ type AuthenticatedClient struct {
 	*Client
 }
 
-func NewClient(id string, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
+func NewClient(id string, clientType ClientType, hashedPassword *HashedPassword, redirectURIs []url.URL) (*Client, error) {
 	c := &Client{
 		ID:           id,
+		Type:         clientType,
 		secret:       hashedPassword,
 		redirectURIs: redirectURIs,
 	}
@@ -45,7 +58,12 @@ func NewClient(id string, hashedPassword *HashedPassword, redirectURIs []url.URL
 }
 
 // Authenticate authenticates client using Basic Authentication and returns AuthenticatedClient.
+// if ClientType is not ClientTypeConfidential, return ErrClientCredentialIsNotAllowed error.
 func (c *Client) Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error) {
+	if c.Type != ClientTypeConfidential {
+		return nil, ErrClientCredentialIsNotAllowed
+	}
+
 	req := &http.Request{
 		Header: header,
 	}

@@ -16,7 +16,7 @@ func NewClientFixture() []*Client {
 	if err != nil {
 		panic(err)
 	}
-	client, err := NewClient("dummy_client_id", NewHashedPassword("dummy_password"), []url.URL{
+	client, err := NewClient("dummy_client_id", ClientTypeConfidential, NewHashedPassword("dummy_password"), []url.URL{
 		*redirectURIForTestSuite,
 		*redirectURIForLocalUI,
 		*redirectURIForProduction,
