@@ -126,19 +126,14 @@ func (s *Server) Authenticate(ctx context.Context, req *connect.Request[oidcv1.A
 }
 
 func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.ExchangeRequest]) (*connect.Response[oidcv1.ExchangeResponse], error) {
-	// TODO: If the client type is confidential or the client was issued client
-	//   credentials (or assigned other authentication requirements), the
-	//   client MUST authenticate with the authorization server as described
-	//   in Section 3.2.1.
-	clientID := "TODO: fetch client and verify client is authenticated"
-	client, err := s.clientDatastore.FetchClient(clientID)
-	if err != nil {
-		if errors.Is(err, internal.ErrClientNotFound) {
-			log.Ctx(ctx).Info().Err(err).Str("clientID", clientID).Msgf("client is not found")
-			return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidClientID)
-		}
-		log.Ctx(ctx).Error().Err(err).Str("clientID", clientID).Msgf("failed to fetch client")
-		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to fetch client"))
+	authenticatedClient := internal.AuthenticatedClientFromContext(ctx)
+
+	if authenticatedClient == nil {
+		log.Ctx(ctx).Info().Msgf("ctx does not have authenticated client")
+
+		connectErr := connect.NewError(connect.CodeUnauthenticated, ErrInvalidClient)
+		connectErr.Meta().Set("WWW-Authenticate", "Basic")
+		return nil, connectErr
 	}
 
 	grantType, err := internal.NewGrantType(req.Msg.GrantType)
@@ -161,7 +156,7 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 
 	// verify that the authorization code is valid, and ensure that the "redirect_uri" parameter is present and identical if the
 	// "redirect_uri" parameter was included in the initial authorization request
-	code, err := s.codeDatastore.Fetch(req.Msg.Code, clientID, *redirectURI)
+	code, err := s.codeDatastore.Fetch(req.Msg.Code, authenticatedClient.ID, *redirectURI)
 	if err != nil {
 		log.Ctx(ctx).Info().Err(err).Str("code", req.Msg.Code).Msgf("code which is satisfied requirements not found")
 		return nil, connect.NewError(connect.CodeInvalidArgument, ErrInvalidRedirectURI)
@@ -178,7 +173,7 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 
 	// TODO: pass correct sub and scopes
 	const sub = "dummy_sub"
-	accessToken, err := internal.NewAccessToken(sub, client, []internal.Scope{internal.ScopeOpenID})
+	accessToken, err := internal.NewAccessToken(sub, authenticatedClient, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate access token")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate access token"))
@@ -189,7 +184,7 @@ func (s *Server) Exchange(ctx context.Context, req *connect.Request[oidcv1.Excha
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to store access token"))
 	}
 
-	idToken, err := internal.NewSignedIDToken(sub, clientID)
+	idToken, err := internal.NewSignedIDToken(sub, authenticatedClient)
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Msgf("failed to initiate id token")
 		return nil, connect.NewError(connect.CodeInternal, errors.New("failed to initiate id token"))

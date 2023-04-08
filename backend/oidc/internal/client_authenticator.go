@@ -12,7 +12,7 @@ import (
 type ClientAuthenticator interface {
 	// Authenticate authenticates client and returns AuthenticatedClient.
 	// if ClientType is not ClientTypeConfidential, return ErrClientCredentialNotAllowed error.
-	Authenticate(ctx context.Context, req http.Request) (*AuthenticatedClient, error)
+	Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error)
 }
 
 type BasicClientAuthenticator struct {
@@ -24,7 +24,8 @@ func NewBasicClientAuthenticator(datastore ClientDatastore) *BasicClientAuthenti
 }
 
 // Authenticate authenticates client using Basic Authentication.
-func (a *BasicClientAuthenticator) Authenticate(ctx context.Context, req *http.Request) (*AuthenticatedClient, error) {
+func (a *BasicClientAuthenticator) Authenticate(ctx context.Context, header http.Header) (*AuthenticatedClient, error) {
+	req := &http.Request{Header: header}
 	basicClientID, basicClientSecret, ok := req.BasicAuth()
 	if !ok {
 		log.Ctx(ctx).Info().Msg("not valid basic auth")
@@ -60,4 +61,24 @@ func (a *BasicClientAuthenticator) Authenticate(ctx context.Context, req *http.R
 	}
 
 	return &AuthenticatedClient{unauthenticatedClient}, nil
+}
+
+type ctxKey struct{}
+
+var authenticatedClientCtxKey = ctxKey{}
+
+// ContextWithAuthenticatedClient returns a new context.Context which has authenticated client.
+func ContextWithAuthenticatedClient(ctx context.Context, client *AuthenticatedClient) context.Context {
+	return context.WithValue(ctx, authenticatedClientCtxKey, client)
+}
+
+// AuthenticatedClientFromContext returns the AuthenticatedClient associated with `ctx`.
+// If AuthenticatedClient is not found, it returns nil.
+func AuthenticatedClientFromContext(ctx context.Context) *AuthenticatedClient {
+	val := ctx.Value(authenticatedClientCtxKey)
+
+	if client, ok := val.(*AuthenticatedClient); ok {
+		return client
+	}
+	return nil
 }

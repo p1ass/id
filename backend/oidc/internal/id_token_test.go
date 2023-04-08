@@ -15,7 +15,7 @@ import (
 func TestNewSignedIDToken_IssShouldBeIDP1assCom(t *testing.T) {
 	t.Parallel()
 
-	idToken, err := internal.NewSignedIDToken("dummy_sub", "dummy_client_id")
+	idToken, err := internal.NewSignedIDToken("dummy_sub", &internal.AuthenticatedClient{Client: &internal.Client{ID: "dummy_client_id"}})
 	if err != nil {
 		t.Errorf("NewSignedIDToken should not be error, but got error: %s", err)
 		return
@@ -31,7 +31,7 @@ func TestNewSignedIDToken_IssShouldBeIDP1assCom(t *testing.T) {
 func TestNewSignedIDToken_EqualSub(t *testing.T) {
 	t.Parallel()
 
-	idToken, err := internal.NewSignedIDToken("dummy_sub", "dummy_client_id")
+	idToken, err := internal.NewSignedIDToken("dummy_sub", &internal.AuthenticatedClient{Client: &internal.Client{ID: "dummy_client_id"}})
 	if err != nil {
 		t.Errorf("NewSignedIDToken should not be error, but got error: %s", err)
 		return
@@ -47,7 +47,7 @@ func TestNewSignedIDToken_EqualSub(t *testing.T) {
 func TestNewSignedIDToken_EqualAudience(t *testing.T) {
 	t.Parallel()
 
-	idToken, err := internal.NewSignedIDToken("dummy_sub", "dummy_client_id")
+	idToken, err := internal.NewSignedIDToken("dummy_sub", &internal.AuthenticatedClient{Client: &internal.Client{ID: "dummy_client_id"}})
 	if err != nil {
 		t.Errorf("NewSignedIDToken should not be error, but got error: %s", err)
 		return
@@ -67,7 +67,7 @@ func TestNewSignedIDToken_IssuedAtShouldBeNowSecond(t *testing.T) {
 	now := flextime.Now().UTC().Truncate(time.Second)
 	flextime.Fix(now)
 
-	idToken, err := internal.NewSignedIDToken("dummy_sub", "dummy_client_id")
+	idToken, err := internal.NewSignedIDToken("dummy_sub", &internal.AuthenticatedClient{Client: &internal.Client{ID: "dummy_client_id"}})
 	if err != nil {
 		t.Errorf("NewSignedIDToken should not be error, but got error: %s", err)
 		return
@@ -85,7 +85,7 @@ func TestNewSignedIDToken_ExpirationShouldBeAfter10Minutes(t *testing.T) {
 	now := flextime.Now().UTC()
 	flextime.Fix(now)
 
-	idToken, err := internal.NewSignedIDToken("dummy_sub", "dummy_client_id")
+	idToken, err := internal.NewSignedIDToken("dummy_sub", &internal.AuthenticatedClient{Client: &internal.Client{ID: "dummy_client_id"}})
 	if err != nil {
 		t.Errorf("NewSignedIDToken should not be error, but got error: %s", err)
 		return

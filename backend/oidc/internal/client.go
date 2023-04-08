@@ -35,7 +35,7 @@ type Client struct {
 	redirectURIs []url.URL
 }
 
-// AuthenticatedClient is a user authenticated client made from Client#Authenticate method.
+// AuthenticatedClient is a user authenticated client made from ClientAuthenticator#Authenticate method.
 // It is used for preventing mistakes that we use client without client authentication.
 type AuthenticatedClient struct {
 	*Client

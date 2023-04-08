@@ -12,7 +12,7 @@ import (
 func TestNewAccessToken_TokenTypeMustBeBearer(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.AuthenticatedClient{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func TestNewAccessToken_TokenTypeMustBeBearer(t *testing.T) {
 func TestNewAccessToken_TokenShouldBeASCII(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.AuthenticatedClient{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestNewAccessToken_TokenShouldBeASCII(t *testing.T) {
 func TestNewAccessToken_TokenShouldNotBeEmpty(t *testing.T) {
 	t.Parallel()
 
-	got, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
+	got, err := internal.NewAccessToken("dummy_sub", &internal.AuthenticatedClient{}, []internal.Scope{internal.ScopeOpenID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestAccessToken_ExpiresInSec(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			flextime.Fix(createdTime)
 
-			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
+			at, err := internal.NewAccessToken("dummy_sub", &internal.AuthenticatedClient{}, []internal.Scope{internal.ScopeOpenID})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -115,7 +115,7 @@ func TestAccessToken_Expired(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			flextime.Fix(createdTime)
 
-			at, err := internal.NewAccessToken("dummy_sub", &internal.Client{}, []internal.Scope{internal.ScopeOpenID})
+			at, err := internal.NewAccessToken("dummy_sub", &internal.AuthenticatedClient{}, []internal.Scope{internal.ScopeOpenID})
 			if err != nil {
 				t.Fatal(err)
 			}

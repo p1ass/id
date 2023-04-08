@@ -66,7 +66,8 @@ func main() {
 	path, handler := oidcv1connect.NewOIDCPrivateServiceHandler(server,
 		connect.WithInterceptors(
 			otelconnect.NewInterceptor(otelconnect.WithTrustRemote()),
-			zerologgcloud.NewCloudLoggingTraceContextInterceptor(cfg.GoogleCloudProjectID)),
+			zerologgcloud.NewCloudLoggingTraceContextInterceptor(cfg.GoogleCloudProjectID),
+		),
 	)
 	mux.Handle(path, handler)
 
