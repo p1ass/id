@@ -62,7 +62,9 @@ func main() {
 		port = "8080"
 	}
 
-	gwMux := runtime.NewServeMux()
+	gwMux := runtime.NewServeMux(runtime.WithIncomingHeaderMatcher(func(s string) (string, bool) {
+		return s, true
+	}))
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	if err := v1.RegisterOIDCPrivateServiceHandlerFromEndpoint(context.Background(), gwMux, fmt.Sprintf("127.0.0.1:%s", port), opts); err != nil {
 		log.Error().Err(err)

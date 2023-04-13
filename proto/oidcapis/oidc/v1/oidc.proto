@@ -20,7 +20,8 @@ service OIDCPrivateService {
   // - InvalidArgument: "invalid_redirect_uri"
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {
         option (google.api.http) = {
-            post: "/v1/oidc/authenticate"
+            post: "/v1/oidc/authenticate",
+            body: "*"
           };
   }
   // Exchange exchanges authorization code into access token and ID Token
@@ -34,7 +35,8 @@ service OIDCPrivateService {
   // - InvalidArgument: "invalid_redirect_uri"
   rpc Exchange(ExchangeRequest) returns (ExchangeResponse) {
     option (google.api.http) = {
-      post: "/v1/oidc/exchange"
+      post: "/v1/oidc/exchange",
+      body: "*"
     };
   }
 }

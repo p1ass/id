@@ -36,47 +36,12 @@
         },
         "parameters": [
           {
-            "name": "scopes",
-            "description": "scopes MUST contains `openid` scope.",
-            "in": "query",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
-          },
-          {
-            "name": "responseTypes",
-            "description": "Supported type is only `code` (Authorization Code Flow)",
-            "in": "query",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
-          },
-          {
-            "name": "clientId",
-            "description": "OAuth 2.0 Client identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "redirectUri",
-            "description": "Redirection URI to which the response will be sent.\nThis URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "consented",
-            "description": "Whether user consents to authorize/authenticate the client.",
-            "in": "query",
-            "required": false,
-            "type": "boolean"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AuthenticateRequest"
+            }
           }
         ],
         "tags": [
@@ -104,25 +69,12 @@
         },
         "parameters": [
           {
-            "name": "grantType",
-            "description": "Grant type MUST be `authorization_code`",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "code",
-            "description": "OAuth 2.0 Authorization Code",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "redirectUri",
-            "description": "redirect_uri MUST be identical authenticate request `redirect_uri` value",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ExchangeRequest"
+            }
           }
         ],
         "tags": [
@@ -160,6 +112,38 @@
         }
       }
     },
+    "v1AuthenticateRequest": {
+      "type": "object",
+      "properties": {
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "scopes MUST contains `openid` scope."
+        },
+        "responseTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Supported type is only `code` (Authorization Code Flow)"
+        },
+        "clientId": {
+          "type": "string",
+          "title": "OAuth 2.0 Client identifier"
+        },
+        "redirectUri": {
+          "type": "string",
+          "title": "Redirection URI to which the response will be sent.\nThis URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/"
+        },
+        "consented": {
+          "type": "boolean",
+          "description": "Whether user consents to authorize/authenticate the client."
+        }
+      },
+      "title": "Spec: [OpenID Connect Core 1.0 Section 3.1.2.1.](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)"
+    },
     "v1AuthenticateResponse": {
       "type": "object",
       "properties": {
@@ -169,6 +153,24 @@
         }
       },
       "title": "Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#AuthResponse)"
+    },
+    "v1ExchangeRequest": {
+      "type": "object",
+      "properties": {
+        "grantType": {
+          "type": "string",
+          "title": "Grant type MUST be `authorization_code`"
+        },
+        "code": {
+          "type": "string",
+          "title": "OAuth 2.0 Authorization Code"
+        },
+        "redirectUri": {
+          "type": "string",
+          "title": "redirect_uri MUST be identical authenticate request `redirect_uri` value"
+        }
+      },
+      "title": "Spec: [OpenID Connect Core 1.0 Section 3.1.3.1.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenRequest)"
     },
     "v1ExchangeResponse": {
       "type": "object",
