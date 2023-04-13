@@ -1,0 +1,201 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "oidc/v1/oidc.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "OIDCPrivateService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/oidc/authenticate": {
+      "post": {
+        "summary": "Authenticate authenticates the end user and generates OAuth2.0 Authorization Code\nPossible error code (defined by OAuth2.0 or OpenID Connect):\n- InvalidArgument: \"invalid_scope\"\n- InvalidArgument: \"invalid_request_uri\"\n- InvalidArgument: \"unsupported_response_type\"\n- InvalidArgument: \"invalid_request\"\n- PermissionDenied: \"unauthorized_client\"\n- PermissionDenied: \"consent_required\"\nPossible error code (defined by Self):\n- InvalidArgument: \"invalid_client_id\"\n- InvalidArgument: \"invalid_redirect_uri\"",
+        "operationId": "OIDCPrivateService_Authenticate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AuthenticateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "scopes",
+            "description": "scopes MUST contains `openid` scope.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "responseTypes",
+            "description": "Supported type is only `code` (Authorization Code Flow)",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "clientId",
+            "description": "OAuth 2.0 Client identifier",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "redirectUri",
+            "description": "Redirection URI to which the response will be sent.\nThis URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "consented",
+            "description": "Whether user consents to authorize/authenticate the client.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "OIDCPrivateService"
+        ]
+      }
+    },
+    "/v1/oidc/exchange": {
+      "post": {
+        "summary": "Exchange exchanges authorization code into access token and ID Token\nSpec: [OpenID Connect Core 1.0 Section 3.1.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenEndpoint)\nPossible error code (defined by OAuth2.0 or OpenID Connect):\n- InvalidArgument: \"invalid_request\"\n- InvalidArgument: \"unsupported_grant_type\"\n- InvalidArgument: \"invalid_grant\"\n- Unauthenticated: \"invalid_client\"\nPossible error code (defined by Self):\n- InvalidArgument: \"invalid_redirect_uri\"",
+        "operationId": "OIDCPrivateService_Exchange",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ExchangeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "grantType",
+            "description": "Grant type MUST be `authorization_code`",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "description": "OAuth 2.0 Authorization Code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "redirectUri",
+            "description": "redirect_uri MUST be identical authenticate request `redirect_uri` value",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OIDCPrivateService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AuthenticateResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "OAuth 2.0 Authorization Code"
+        }
+      },
+      "title": "Spec: [OpenID Connect Core 1.0 Section 3.1.2.6.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#AuthResponse)"
+    },
+    "v1ExchangeResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "title": "Access Token"
+        },
+        "idToken": {
+          "type": "string",
+          "title": "ID Token value associated with the authenticated session"
+        },
+        "tokenType": {
+          "type": "string",
+          "title": "Token type MUST be `Bearer`, as specified in [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750.htm)"
+        },
+        "expiresIn": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Lifetime in seconds of the access token.\nRequirement level is MUST (Original spec is RECOMMENDED)."
+        },
+        "refreshToken": {
+          "type": "string",
+          "title": "Refresh token"
+        }
+      },
+      "title": "Spec: [OpenID Connect Core 1.0 Section 3.1.3.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenResponse)"
+    }
+  }
+}

@@ -9,6 +9,7 @@ require (
 	github.com/bufbuild/connect-go v1.6.0
 	github.com/bufbuild/connect-opentelemetry-go v0.1.0
 	github.com/google/go-cmp v0.5.9
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/justinas/alice v1.2.0
 	github.com/lestrrat-go/jwx/v2 v2.0.9
 	github.com/rs/cors v1.8.3
@@ -18,6 +19,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.14.0
 	golang.org/x/crypto v0.8.0
 	golang.org/x/net v0.9.0
+	google.golang.org/genproto v0.0.0-20230223222841-637eb2293923
+	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.30.0
 )
 
@@ -27,6 +30,7 @@ require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.1 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect
 	github.com/lestrrat-go/httprc v1.0.4 // indirect

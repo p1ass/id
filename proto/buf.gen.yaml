@@ -12,6 +12,9 @@ plugins:
   - name: connect-go
     out: ../backend/generated
     opt: paths=source_relative
+  - name: go-grpc
+    out: ../backend/generated
+    opt: paths=source_relative
   - name: doc
     out: ./
     opt: markdown,spec.md
@@ -22,3 +25,8 @@ plugins:
     out: ../ui/generated
     # Set import_extension to empty because of fixing import issues
     opt: target=ts,import_extension=
+  - name: grpc-gateway
+    out: ../backend/generated
+    opt: paths=source_relative
+  - name: openapiv2
+    out: ./openapi

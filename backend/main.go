@@ -8,7 +8,9 @@ import (
 	"time"
 
 	cloudtracepropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/justinas/alice"
+	v1 "github.com/p1ass/id/backend/generated/oidc/v1"
 	"github.com/p1ass/id/backend/oidc"
 	"github.com/p1ass/id/backend/pkg/config"
 	"github.com/p1ass/id/backend/pkg/zerologgcloud"
@@ -20,6 +22,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -58,8 +62,16 @@ func main() {
 		port = "8080"
 	}
 
+	gwMux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	if err := v1.RegisterOIDCPrivateServiceHandlerFromEndpoint(context.Background(), gwMux, fmt.Sprintf("127.0.0.1:%s", port), opts); err != nil {
+		log.Error().Err(err)
+		return
+	}
+
 	mux := http.NewServeMux()
 	mux.Handle(oidc.NewServiceHandler(cfg))
+	mux.Handle("/", gwMux)
 
 	log.Info().Msg("Starting server...")
 
