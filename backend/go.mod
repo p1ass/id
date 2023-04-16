@@ -12,7 +12,7 @@ require (
 	github.com/justinas/alice v1.2.0
 	github.com/lestrrat-go/jwx/v2 v2.0.9
 	github.com/rs/cors v1.8.3
-	github.com/rs/zerolog v1.29.0
+	github.com/rs/zerolog v1.29.1
 	go.opentelemetry.io/otel v1.14.0
 	go.opentelemetry.io/otel/sdk v1.14.0
 	go.opentelemetry.io/otel/trace v1.14.0
