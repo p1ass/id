@@ -11,7 +11,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/justinas/alice v1.2.0
 	github.com/lestrrat-go/jwx/v2 v2.0.9
-	github.com/rs/cors v1.8.3
+	github.com/rs/cors v1.9.0
 	github.com/rs/zerolog v1.29.1
 	go.opentelemetry.io/otel v1.14.0
 	go.opentelemetry.io/otel/sdk v1.14.0
