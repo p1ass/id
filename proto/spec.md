@@ -33,7 +33,7 @@ Spec: [OpenID Connect Core 1.0 Section 3.1.2.1.](https://openid.net/specs/openid
 | scopes | [string](#string) | repeated | scopes MUST contains `openid` scope. |
 | response_types | [string](#string) | repeated | Supported type is only `code` (Authorization Code Flow) |
 | client_id | [string](#string) |  | OAuth 2.0 Client identifier |
-| redirect_uri | [string](#string) |  | Redirection URI to which the response will be sent. This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/ |
+| redirect_uri | [string](#string) |  | Redirection URI to which the response will be sent. This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider. |
 | consented | [bool](#bool) |  | Whether user consents to authorize/authenticate the client. |
 
 
@@ -66,7 +66,7 @@ Spec: [OpenID Connect Core 1.0 Section 3.1.3.1.](http://openid-foundation-japan.
 | ----- | ---- | ----- | ----------- |
 | grant_type | [string](#string) |  | Grant type MUST be `authorization_code` |
 | code | [string](#string) |  | OAuth 2.0 Authorization Code |
-| redirect_uri | [string](#string) |  | redirect_uri MUST be identical authenticate request `redirect_uri` value |
+| redirect_uri | [string](#string) | optional | if the &#34;redirect_uri&#34; parameter was included in the authorization request as described in Section 4.1.1, and their values MUST be identical. |
 
 
 

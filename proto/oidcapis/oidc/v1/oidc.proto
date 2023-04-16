@@ -38,7 +38,7 @@ message AuthenticateRequest {
   // OAuth 2.0 Client identifier
   string client_id = 3;
   // Redirection URI to which the response will be sent.
-  // This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider/
+  // This URI MUST exactly match one of the Redirection URI values for the Client pre-registered at the OpenID Provider.
   string redirect_uri = 4;
   // Whether user consents to authorize/authenticate the client.
   bool consented = 5;
@@ -56,8 +56,8 @@ message ExchangeRequest {
   string grant_type = 1;
   // OAuth 2.0 Authorization Code
   string code = 2;
-  // redirect_uri MUST be identical authenticate request `redirect_uri` value
-  string redirect_uri = 3;
+  // if the "redirect_uri" parameter was included in the authorization request as described in Section 4.1.1, and their values MUST be identical.
+  optional string redirect_uri = 3;
 }
 
 // Spec: [OpenID Connect Core 1.0 Section 3.1.3.3.](http://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#TokenResponse)

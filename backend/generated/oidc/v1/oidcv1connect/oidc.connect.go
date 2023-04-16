@@ -25,6 +25,22 @@ const (
 	OIDCPrivateServiceName = "oidc.v1.OIDCPrivateService"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// OIDCPrivateServiceAuthenticateProcedure is the fully-qualified name of the OIDCPrivateService's
+	// Authenticate RPC.
+	OIDCPrivateServiceAuthenticateProcedure = "/oidc.v1.OIDCPrivateService/Authenticate"
+	// OIDCPrivateServiceExchangeProcedure is the fully-qualified name of the OIDCPrivateService's
+	// Exchange RPC.
+	OIDCPrivateServiceExchangeProcedure = "/oidc.v1.OIDCPrivateService/Exchange"
+)
+
 // OIDCPrivateServiceClient is a client for the oidc.v1.OIDCPrivateService service.
 type OIDCPrivateServiceClient interface {
 	// Authenticate authenticates the end user and generates OAuth2.0 Authorization Code
@@ -63,12 +79,12 @@ func NewOIDCPrivateServiceClient(httpClient connect_go.HTTPClient, baseURL strin
 	return &oIDCPrivateServiceClient{
 		authenticate: connect_go.NewClient[v1.AuthenticateRequest, v1.AuthenticateResponse](
 			httpClient,
-			baseURL+"/oidc.v1.OIDCPrivateService/Authenticate",
+			baseURL+OIDCPrivateServiceAuthenticateProcedure,
 			opts...,
 		),
 		exchange: connect_go.NewClient[v1.ExchangeRequest, v1.ExchangeResponse](
 			httpClient,
-			baseURL+"/oidc.v1.OIDCPrivateService/Exchange",
+			baseURL+OIDCPrivateServiceExchangeProcedure,
 			opts...,
 		),
 	}
@@ -123,13 +139,13 @@ type OIDCPrivateServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewOIDCPrivateServiceHandler(svc OIDCPrivateServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/oidc.v1.OIDCPrivateService/Authenticate", connect_go.NewUnaryHandler(
-		"/oidc.v1.OIDCPrivateService/Authenticate",
+	mux.Handle(OIDCPrivateServiceAuthenticateProcedure, connect_go.NewUnaryHandler(
+		OIDCPrivateServiceAuthenticateProcedure,
 		svc.Authenticate,
 		opts...,
 	))
-	mux.Handle("/oidc.v1.OIDCPrivateService/Exchange", connect_go.NewUnaryHandler(
-		"/oidc.v1.OIDCPrivateService/Exchange",
+	mux.Handle(OIDCPrivateServiceExchangeProcedure, connect_go.NewUnaryHandler(
+		OIDCPrivateServiceExchangeProcedure,
 		svc.Exchange,
 		opts...,
 	))
