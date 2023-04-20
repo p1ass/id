@@ -6,8 +6,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.37.1 h1
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.37.1/go.mod h1:xu0leWH05107AH0ZWs96A9h2Jy0j1ZzQKL87T/NJvJA=
 github.com/Songmu/flextime v0.1.0 h1:sss5IALl84LbvU/cS5D1cKNd5ffT94N2BZwC+esgAJI=
 github.com/Songmu/flextime v0.1.0/go.mod h1:ofUSZ/qj7f1BfQQ6rEH4ovewJ0SZmLOjBF1xa8iE87Q=
-github.com/bufbuild/connect-go v1.6.0 h1:OCEB8JuEuvcY5lEKZCQE95CUscqkDtLnQceNhDgi92k=
-github.com/bufbuild/connect-go v1.6.0/go.mod h1:GmMJYR6orFqD0Y6ZgX8pwQ8j9baizDrIQMm1/a6LnHk=
+github.com/bufbuild/connect-go v1.7.0 h1:MGp82v7SCza+3RhsVhV7aMikwxvI3ZfD72YiGt8FYJo=
+github.com/bufbuild/connect-go v1.7.0/go.mod h1:GmMJYR6orFqD0Y6ZgX8pwQ8j9baizDrIQMm1/a6LnHk=
 github.com/bufbuild/connect-opentelemetry-go v0.1.0 h1:UA3mWNBDpie9iObZCB/RTUbHp/J8tSg3rwA6B38U2Cg=
 github.com/bufbuild/connect-opentelemetry-go v0.1.0/go.mod h1:D/pbarAjos2MS7DVhwCJksyOtoEmfBbfQasta2aJkKI=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
