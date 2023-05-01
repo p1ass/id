@@ -13,9 +13,9 @@ require (
 	github.com/lestrrat-go/jwx/v2 v2.0.9
 	github.com/rs/cors v1.9.0
 	github.com/rs/zerolog v1.29.1
-	go.opentelemetry.io/otel v1.14.0
-	go.opentelemetry.io/otel/sdk v1.14.0
-	go.opentelemetry.io/otel/trace v1.14.0
+	go.opentelemetry.io/otel v1.15.0
+	go.opentelemetry.io/otel/sdk v1.15.0
+	go.opentelemetry.io/otel/trace v1.15.0
 	golang.org/x/crypto v0.8.0
 	golang.org/x/net v0.9.0
 	google.golang.org/protobuf v1.30.0
@@ -24,7 +24,7 @@ require (
 require (
 	cloud.google.com/go/compute v1.18.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
-	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.1 // indirect
