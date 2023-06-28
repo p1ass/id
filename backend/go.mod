@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.37.1
 	github.com/Songmu/flextime v0.1.0
-	github.com/bufbuild/connect-go v1.6.0
+	github.com/bufbuild/connect-go v1.9.0
 	github.com/bufbuild/connect-opentelemetry-go v0.1.0
 	github.com/google/go-cmp v0.5.9
 	github.com/justinas/alice v1.2.0
@@ -18,7 +18,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.14.0
 	golang.org/x/crypto v0.8.0
 	golang.org/x/net v0.9.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 )
 
 require (
